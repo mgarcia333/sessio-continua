@@ -1,0 +1,8 @@
+.git
+.gitignore
+.assetsignore
+*.py
+*.md
+LICENSE
+docs
+wrangler.jsonc

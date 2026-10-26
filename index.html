@@ -1,0 +1,2049 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sessió Contínua</title>
+<meta name="description" content="La cartelera de todos los cines de Barcelona: qué echan, a qué hora, en qué versión y cuánto cuesta cada sesión.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=League+Gothic&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 7h26v6a3 3 0 0 0 0 6v6H3v-6a3 3 0 0 0 0-6z' fill='%23C8381C'/%3E%3Cpath d='M20 8v16' stroke='%23F2EDE2' stroke-width='1.5' stroke-dasharray='2 2'/%3E%3C/svg%3E">
+<script>
+  // tema antes de pintar, para que no parpadee
+  try { const t = localStorage.getItem('sc-tema'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+:root {
+  --paper: #F2EDE2;
+  --paper-2: #E8E1D2;
+  --card: #F8F4EB;
+  --ink: #1B1815;
+  --ink-2: #463F37;
+  --muted: #7B7165;
+  --hair: rgba(27, 24, 21, .16);
+  --hair-2: rgba(27, 24, 21, .38);
+  --red: #C8381C;
+  --yellow: #F1C232;
+  --on-yellow: #1B1815;
+  --green: #2D6A4C;
+  --shadow: 0 1px 0 rgba(27, 24, 21, .08), 0 18px 40px -18px rgba(27, 24, 21, .35);
+  --display: "League Gothic", "Arial Narrow", Impact, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #13110F; --paper-2: #1C1916; --card: #1A1815; --ink: #EEE6D5; --ink-2: #CEC5B3;
+    --muted: #978D7F; --hair: rgba(238, 230, 213, .14); --hair-2: rgba(238, 230, 213, .34);
+    --red: #E8613F; --yellow: #E6B62E; --on-yellow: #15120F; --green: #6BBF92;
+    --shadow: 0 0 0 1px rgba(238, 230, 213, .08), 0 24px 48px -16px rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #13110F; --paper-2: #1C1916; --card: #1A1815; --ink: #EEE6D5; --ink-2: #CEC5B3;
+  --muted: #978D7F; --hair: rgba(238, 230, 213, .14); --hair-2: rgba(238, 230, 213, .34);
+  --red: #E8613F; --yellow: #E6B62E; --on-yellow: #15120F; --green: #6BBF92;
+  --shadow: 0 0 0 1px rgba(238, 230, 213, .08), 0 24px 48px -16px rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 17px/1.45 var(--serif); font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+::selection { background: var(--yellow); color: var(--on-yellow); }
+.envoltorio { max-width: 1320px; margin: 0 auto; padding: 0 32px; }
+.mono { font-family: var(--mono); }
+.oculto { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.etq {
+  font: 500 11px/1.2 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+}
+
+/* ---------- cabecera ---------- */
+.linea-sup {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 22px;
+  padding: 14px 0 10px; border-bottom: 1px solid var(--ink);
+  font: 400 12px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase;
+}
+.linea-sup span:first-child { font-weight: 500; }
+.linea-sup .sep { flex: 1; }
+.luces {
+  border: 1px solid var(--ink); background: none; padding: 6px 10px 5px;
+  font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+}
+.luces:hover { background: var(--ink); color: var(--paper); }
+.cabecera__main {
+  display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 32px; align-items: end;
+  padding: 18px 0 20px; border-bottom: 4px solid var(--ink);
+  position: relative;
+}
+.cabecera__main::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -9px; border-bottom: 1px solid var(--ink);
+}
+.marca {
+  margin: 0; font: 400 clamp(76px, 13.4vw, 196px)/.84 var(--display);
+  text-transform: uppercase; letter-spacing: .005em; padding-top: .1em;
+}
+.marca em { font-style: normal; color: var(--red); display: block; margin-top: .09em; }
+.lema { margin: 0 0 14px; font-size: 18px; line-height: 1.35; font-style: italic; color: var(--ink-2); }
+.cifras { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-top: 1px solid var(--ink); }
+.cifras div { padding: 8px 0 0; }
+.cifras div + div { border-left: 1px solid var(--hair-2); padding-left: 12px; }
+.cifras dt { font: 500 10.5px/1.2 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.cifras dd { margin: 2px 0 0; font: 400 44px/1 var(--display); }
+
+.aviso {
+  margin: 26px 0 0; padding: 12px 16px; border: 1px solid var(--red); color: var(--ink);
+  background: color-mix(in srgb, var(--red) 8%, transparent); font-size: 15px;
+}
+.aviso b { color: var(--red); }
+.aviso code { font-family: var(--mono); font-size: 13px; }
+
+/* ---------- buscador ---------- */
+.busca { padding: 34px 0 6px; display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 0 24px; }
+.busca__lbl { padding-top: 16px; }
+.busca__lbl b { display: block; font: 400 30px/1 var(--display); text-transform: uppercase; color: var(--ink); margin-top: 6px; letter-spacing: .01em; }
+.campo { position: relative; border-bottom: 2px solid var(--ink); display: flex; align-items: center; }
+.campo input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: none;
+  font: italic 400 clamp(22px, 3.1vw, 36px)/1.2 var(--serif); padding: 12px 40px 12px 0;
+}
+.campo input::placeholder { color: var(--muted); opacity: .8; }
+.campo input::-webkit-search-cancel-button { display: none; }
+.campo kbd {
+  font: 500 12px/1 var(--mono); border: 1px solid var(--hair-2); padding: 4px 7px; color: var(--muted);
+}
+.campo .borrar {
+  border: 0; background: none; font: 400 30px/1 var(--display); padding: 0 6px; color: var(--muted); display: none;
+}
+.campo.lleno .borrar { display: block; }
+.campo.lleno kbd { display: none; }
+.sugerencias { grid-column: 2; margin: 10px 0 0; font-size: 15px; color: var(--ink-2); }
+.sugerencias button {
+  border: 0; background: none; padding: 0; font: inherit; font-style: italic;
+  text-decoration: underline; text-decoration-color: var(--hair-2); text-underline-offset: 3px;
+}
+.sugerencias button:hover { color: var(--red); text-decoration-color: var(--red); }
+
+/* ---------- días ---------- */
+.dias {
+  margin: 28px 0 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr));
+  border: 1px solid var(--ink);
+}
+.dia {
+  position: relative; border: 0; background: none; text-align: left; padding: 10px 12px 11px;
+  display: grid; gap: 2px; min-height: 96px; align-content: start;
+}
+.dia + .dia { border-left: 1px solid var(--hair-2); }
+.dia:hover { background: var(--paper-2); }
+.dia[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.dia__sem { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.dia__num { font: 400 46px/.9 var(--display); }
+.dia__info { font: 400 11px/1.25 var(--mono); color: var(--muted); }
+.dia[aria-pressed="true"] .dia__info { color: inherit; opacity: .75; }
+.dia__hoy { color: var(--red); }
+.dia[aria-pressed="true"] .dia__hoy { color: var(--yellow); }
+.sello {
+  position: absolute; bottom: 10px; right: 8px; transform: rotate(-7deg);
+  border: 1.5px solid var(--red); color: var(--red); padding: 2px 4px 1px;
+  font: 500 9px/1.05 var(--mono); letter-spacing: .06em; text-transform: uppercase; text-align: center;
+}
+.dia[aria-pressed="true"] .sello { border-color: var(--yellow); color: var(--yellow); }
+.dia--semana .dia__num { font-size: 30px; line-height: 1.05; padding-top: 8px; }
+
+/* ---------- filtros ---------- */
+.filtros {
+  margin-top: 18px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px 22px;
+  padding: 16px 0 18px; border-bottom: 1px solid var(--ink);
+}
+.grupo { display: grid; gap: 8px; align-content: start; }
+.grupo--franja { grid-column: span 7; }
+.grupo--precio { grid-column: span 5; }
+.grupo--version { grid-column: span 4; }
+.grupo--formato { grid-column: span 3; }
+.grupo--donde { grid-column: span 5; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--hair-2); background: none; padding: 7px 10px 6px;
+  font: 500 11.5px/1.1 var(--mono); letter-spacing: .04em; white-space: nowrap;
+}
+.chip small { font-weight: 400; color: var(--muted); margin-left: 3px; }
+.chip:hover { border-color: var(--ink); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .65; }
+.chip:disabled { opacity: .35; cursor: not-allowed; }
+.precio { display: flex; align-items: center; gap: 14px; }
+.precio input[type=range] { flex: 1; accent-color: var(--red); min-width: 0; }
+.precio output { font: 400 30px/1 var(--display); min-width: 108px; text-align: right; }
+.donde { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.donde select {
+  border: 1px solid var(--hair-2); background: var(--paper); padding: 6px 8px 5px;
+  font: 500 11.5px/1.1 var(--mono); max-width: 210px;
+}
+.limpiar {
+  border: 0; background: none; padding: 0; font: 500 11px/1 var(--mono); letter-spacing: .08em;
+  text-transform: uppercase; color: var(--red); text-decoration: underline; text-underline-offset: 3px;
+}
+.filtros__pie { grid-column: 1 / -1; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.check { display: inline-flex; gap: 7px; align-items: center; font: 400 12px/1 var(--mono); color: var(--ink-2); }
+.check input { accent-color: var(--red); margin: 0; }
+.abrir-filtros { display: none; }
+
+/* ---------- cuerpo ---------- */
+.cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 40px; padding: 0 0 60px; }
+.barra {
+  position: sticky; top: 0; z-index: 5; background: var(--paper);
+  display: flex; align-items: stretch; justify-content: space-between; gap: 16px;
+  border-bottom: 1px solid var(--ink);
+}
+.vistas { display: flex; }
+.vista {
+  border: 0; background: none; padding: 16px 16px 12px 0; margin-right: 6px;
+  font: 400 26px/1 var(--display); text-transform: uppercase; color: var(--muted); letter-spacing: .01em;
+  border-bottom: 4px solid transparent; margin-bottom: -1px;
+}
+.vista:hover { color: var(--ink); }
+.vista[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--red); }
+.orden { display: flex; align-items: center; gap: 8px; }
+.orden select {
+  border: 0; border-bottom: 1px solid var(--ink); background: none; padding: 4px 18px 3px 0;
+  font: 500 12px/1.2 var(--mono); appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 6px top 9px, right 1px top 9px; background-size: 5px 5px; background-repeat: no-repeat;
+}
+.orden select option { background: var(--paper); color: var(--ink); }
+.recuento { margin: 14px 0 0; font: 400 12.5px/1.4 var(--mono); color: var(--muted); }
+.recuento b { color: var(--ink); font-weight: 500; }
+
+/* película */
+.peli { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 22px; padding: 26px 0 24px; border-bottom: 1px solid var(--hair-2); }
+.poster {
+  display: block; width: 112px; aspect-ratio: 310 / 420; object-fit: cover; background: var(--paper-2);
+  border: 0; padding: 0; position: relative; overflow: hidden;
+}
+.poster img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.92) contrast(1.02); }
+.peli__poster { border: 0; padding: 0; background: none; align-self: start; display: block; }
+.peli__poster:hover .poster { outline: 3px solid var(--red); outline-offset: -3px; }
+.poster--letra {
+  display: flex; flex-direction: column; justify-content: space-between; padding: 9px 8px 8px; text-align: left;
+  color: #F2EDE2;
+}
+.poster--letra b { font: 400 22px/.92 var(--display); text-transform: uppercase; word-break: break-word; }
+.poster--letra span { font: 500 8.5px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+.peli__cab { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+.peli__titulo { margin: 0; font: 400 clamp(32px, 3.6vw, 46px)/.92 var(--display); text-transform: uppercase; letter-spacing: .005em; }
+.peli__titulo button { border: 0; background: none; padding: 0; font: inherit; text-transform: inherit; text-align: left; letter-spacing: inherit; }
+.peli__titulo button:hover { color: var(--red); }
+.peli__orig { display: block; margin-top: 4px; font: italic 400 15px/1.3 var(--serif); text-transform: none; color: var(--muted); }
+.desde { text-align: right; flex: none; }
+.desde .etq { display: block; }
+.desde b { display: block; font: 400 40px/.95 var(--display); white-space: nowrap; }
+.desde b.rojo { color: var(--red); }
+.peli__meta { margin: 9px 0 0; font: 400 12px/1.55 var(--mono); color: var(--ink-2); }
+.peli__meta .pt { color: var(--hair-2); margin: 0 5px; }
+.peli__sinopsis {
+  margin: 8px 0 0; font-size: 15.5px; line-height: 1.45; color: var(--ink-2); max-width: 70ch;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.salas { list-style: none; margin: 14px 0 0; padding: 0; }
+.sala { display: grid; grid-template-columns: 196px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-top: 1px dotted var(--hair-2); }
+.sala__nom { font-weight: 600; font-size: 16px; line-height: 1.2; }
+.sala__nom button { border: 0; background: none; padding: 0; font: inherit; text-align: left; }
+.sala__nom button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.sala__sub { display: block; margin-top: 3px; font: 400 11px/1.35 var(--mono); color: var(--muted); }
+.horas { display: flex; flex-wrap: wrap; gap: 6px; align-content: start; }
+.hora {
+  display: grid; grid-template-columns: auto auto; column-gap: 7px; align-items: baseline;
+  border: 1px solid var(--hair-2); background: var(--card); padding: 5px 8px 5px; text-align: left; min-width: 76px;
+  font-family: var(--mono);
+}
+.hora:hover { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.hora:hover .hora__p, .hora:hover .hora__v, .hora:hover .hora__d { color: inherit; }
+.hora__d { grid-column: 1 / -1; font-size: 10px; line-height: 1.2; letter-spacing: .06em; text-transform: uppercase; color: var(--red); }
+.hora__t { font-size: 15px; font-weight: 500; line-height: 1.25; }
+.hora__v { font-size: 9.5px; letter-spacing: .05em; color: var(--muted); }
+.hora__p { grid-column: 1 / -1; font-size: 11px; line-height: 1.3; color: var(--ink-2); }
+.hora__p i { font-style: normal; color: var(--muted); }
+.hora--barata { background: var(--yellow); border-color: var(--yellow); color: var(--on-yellow); }
+.hora--barata .hora__v, .hora--barata .hora__p, .hora--barata .hora__d { color: var(--on-yellow); }
+.hora--pasada { opacity: .38; }
+.hora--pasada .hora__t { text-decoration: line-through; }
+.mas {
+  margin-top: 10px; border: 0; background: none; padding: 0;
+  font: 500 11.5px/1.2 var(--mono); letter-spacing: .05em; text-transform: uppercase;
+  text-decoration: underline; text-underline-offset: 4px; color: var(--ink-2);
+}
+.mas:hover { color: var(--red); }
+
+/* cine */
+.cine { padding: 26px 0 24px; border-bottom: 1px solid var(--hair-2); }
+.cine__cab { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+.cine__nom { margin: 0; font: 400 clamp(32px, 3.6vw, 44px)/.95 var(--display); text-transform: uppercase; }
+.cine__cadena { font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--red); display: block; margin-bottom: 6px; }
+.cine__dir { margin: 8px 0 0; font: 400 12px/1.55 var(--mono); color: var(--ink-2); }
+.cine__nota { margin: 6px 0 0; font-size: 15px; font-style: italic; color: var(--ink-2); }
+.cine__tarifa { text-align: right; flex: none; }
+.cine__tarifa b { display: block; font: 400 40px/.95 var(--display); }
+.cine__tarifa span { display: block; font: 400 11px/1.3 var(--mono); color: var(--muted); max-width: 150px; margin-left: auto; }
+.cine .salas .sala { grid-template-columns: 236px minmax(0, 1fr); }
+.enlaces { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font: 500 11px/1 var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+
+/* sesiones (comparador) */
+.tks { list-style: none; margin: 8px 0 0; padding: 0; }
+.tk {
+  display: grid; grid-template-columns: 104px minmax(0, 1fr) 176px; align-items: stretch;
+  border-bottom: 1px solid var(--hair-2); cursor: pointer;
+}
+.tk:hover { background: var(--paper-2); }
+.tk > * { padding: 12px 0; }
+.tk__hora { font: 400 38px/.9 var(--display); padding-left: 2px; }
+.tk__hora small { display: block; margin-top: 4px; font: 500 10.5px/1.1 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--red); }
+.tk__peli { padding-right: 14px; min-width: 0; }
+.tk__peli b { display: block; font-size: 18px; line-height: 1.2; font-weight: 600; }
+.tk__peli span { display: block; margin-top: 4px; font: 400 11.5px/1.4 var(--mono); color: var(--ink-2); }
+.tk__precio { border-left: 2px dashed var(--hair-2); padding-left: 16px; text-align: right; padding-right: 4px; }
+.tk__precio b { display: block; font: 400 34px/.95 var(--display); }
+.tk__precio small { display: block; margin-top: 3px; font: 400 10.5px/1.25 var(--mono); color: var(--muted); }
+.tk--top .tk__precio b { color: var(--red); }
+.mas-tks { margin: 20px 0 0; border: 1px solid var(--ink); background: none; padding: 12px 18px; font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.mas-tks:hover { background: var(--ink); color: var(--paper); }
+
+.vacio { padding: 48px 0; max-width: 46ch; }
+.vacio h3 { margin: 0; font: 400 46px/.95 var(--display); text-transform: uppercase; }
+.vacio p { color: var(--ink-2); }
+
+/* ---------- lateral ---------- */
+.lateral { padding-top: 22px; }
+.lateral__pegado { position: sticky; top: 76px; display: grid; gap: 22px; }
+.caja { border: 1px solid var(--ink); background: var(--card); }
+.caja__tit {
+  margin: 0; padding: 12px 16px 9px; border-bottom: 1px solid var(--ink);
+  font: 400 26px/1 var(--display); text-transform: uppercase; display: flex; justify-content: space-between; align-items: baseline;
+}
+.caja__tit small { font: 400 11px/1 var(--mono); letter-spacing: .05em; text-transform: none; color: var(--muted); }
+.mejor { list-style: none; margin: 0; padding: 0; }
+.mejor li + li { border-top: 1px dotted var(--hair-2); }
+.mejor button {
+  width: 100%; border: 0; background: none; text-align: left; padding: 12px 16px 13px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px;
+}
+.mejor button:hover { background: var(--paper-2); }
+.mejor .etq { grid-column: 1 / -1; color: var(--red); }
+.mejor b { font-size: 17px; line-height: 1.2; font-weight: 600; }
+.mejor span { grid-column: 1; font: 400 11.5px/1.4 var(--mono); color: var(--ink-2); }
+.mejor strong { grid-column: 2; grid-row: 2 / span 2; align-self: center; font: 400 34px/1 var(--display); font-weight: 400; }
+.mejor p { margin: 0; padding: 14px 16px; font-size: 15px; font-style: italic; color: var(--muted); }
+.tarifas { list-style: none; margin: 0; padding: 8px 16px 12px; }
+.tarifas li { display: flex; align-items: baseline; padding: 4px 0; font-size: 15px; }
+.tarifas li.nada { opacity: .45; }
+.tarifas .lider { flex: 1; border-bottom: 1px dotted var(--hair-2); margin: 0 6px 4px; min-width: 12px; }
+.tarifas .pz { font: 500 13px/1 var(--mono); white-space: nowrap; }
+.tarifas .pz.rojo { color: var(--red); }
+.tarifas .q { font: 400 10px/1 var(--mono); color: var(--muted); margin-left: 3px; }
+.caja__pie { padding: 0 16px 12px; font: 400 11px/1.45 var(--mono); color: var(--muted); }
+.caja__pie button { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.leyenda { margin: 0; padding: 12px 16px 14px; display: grid; grid-template-columns: 52px 1fr; gap: 6px 10px; font-size: 14px; }
+.leyenda dt { font: 500 11px/1.6 var(--mono); }
+.leyenda dd { margin: 0; color: var(--ink-2); line-height: 1.35; }
+
+/* ---------- pie ---------- */
+.pie { border-top: 4px solid var(--ink); padding: 26px 0 50px; position: relative; }
+.pie::before { content: ""; position: absolute; left: 0; right: 0; top: 3px; border-top: 1px solid var(--ink); }
+.pie__cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+.pie h4 { margin: 0 0 8px; font: 400 24px/1 var(--display); text-transform: uppercase; }
+.pie p, .pie li { font-size: 15px; color: var(--ink-2); }
+.pie p { margin: 0 0 10px; }
+.pie ul { margin: 0; padding: 0; list-style: none; }
+.pie li { padding: 3px 0; border-bottom: 1px dotted var(--hair-2); display: flex; justify-content: space-between; gap: 10px; }
+.pie code { font: 400 13px var(--mono); background: var(--paper-2); padding: 1px 5px; }
+.colofon { margin-top: 30px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font: 400 11px/1.4 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- diálogos ---------- */
+dialog { border: 0; padding: 0; background: transparent; color: var(--ink); max-width: min(620px, calc(100vw - 24px)); width: 100%; }
+dialog::backdrop { background: rgba(14, 12, 10, .62); }
+dialog[open] { animation: entra .18s ease-out; }
+@keyframes entra { from { transform: translateY(12px); opacity: 0; } }
+.entrada {
+  background: var(--card); box-shadow: var(--shadow); position: relative;
+}
+.entrada__cab { padding: 22px 58px 18px 26px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; border-bottom: 2px dashed var(--hair-2); }
+.entrada__cab .etq { color: var(--red); }
+.entrada__tit { margin: 6px 0 0; font: 400 clamp(36px, 7vw, 54px)/.9 var(--display); text-transform: uppercase; }
+.entrada__cab .poster { width: 74px; }
+.entrada__datos { margin: 0; padding: 18px 26px 6px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+.entrada__datos div { min-width: 0; }
+.entrada__datos dt { font: 500 10.5px/1.2 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.entrada__datos dd { margin: 3px 0 0; font-size: 17px; line-height: 1.3; }
+.entrada__datos .ancho { grid-column: 1 / -1; }
+.entrada__precio { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 14px 26px 16px; margin-top: 8px; border-top: 1px solid var(--hair-2); }
+.entrada__precio b { font: 400 64px/.85 var(--display); color: var(--red); white-space: nowrap; }
+.entrada__precio p { margin: 0; font: 400 12px/1.5 var(--mono); color: var(--ink-2); text-align: right; }
+.entrada__acc { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 26px 24px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--ink); background: none;
+  padding: 12px 15px 11px; font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; text-decoration: none;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn--lleno { background: var(--ink); color: var(--paper); }
+.btn--lleno:hover { background: var(--red); border-color: var(--red); color: #fff; }
+.cerrar {
+  position: absolute; top: 10px; right: 12px; border: 0; background: none; padding: 4px 6px;
+  font: 400 30px/1 var(--display); color: var(--muted); z-index: 1;
+}
+.cerrar:hover { color: var(--red); }
+.ficha { background: var(--card); box-shadow: var(--shadow); position: relative; }
+dialog.grande { max-width: min(880px, calc(100vw - 24px)); }
+.ficha__cab { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 24px; padding: 26px 28px 20px; border-bottom: 1px solid var(--ink); }
+.ficha__cab .poster { width: 150px; }
+.ficha__cab h2 { margin: 0; padding-right: 30px; font: 400 clamp(38px, 6vw, 62px)/.9 var(--display); text-transform: uppercase; }
+.ficha__cab p { margin: 10px 0 0; font-size: 16px; color: var(--ink-2); }
+.notas { display: flex; gap: 18px; margin-top: 12px; }
+.notas div { font: 400 11px/1.3 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.notas b { display: block; font: 400 34px/1 var(--display); color: var(--ink); letter-spacing: 0; }
+.ficha__cuerpo { padding: 6px 28px 26px; }
+.ficha__dia { margin: 18px 0 2px; font: 400 24px/1 var(--display); text-transform: uppercase; }
+.ficha__dia small { font: 500 11px var(--mono); color: var(--red); letter-spacing: .06em; margin-left: 8px; }
+
+/* ---------- mapa ---------- */
+.cuerpo--mapa { grid-template-columns: minmax(0, 1fr); }
+.cuerpo--mapa .lateral { display: none; }
+.mapa { margin-top: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 350px; border: 1px solid var(--ink); background: var(--card); }
+.mapa__lienzo {
+  position: relative; height: min(78vh, 800px); min-height: 520px; overflow: hidden;
+  background: var(--paper); border-right: 1px solid var(--ink); cursor: grab; touch-action: none;
+  user-select: none; -webkit-user-select: none;
+}
+.mapa__lienzo:focus-visible { outline: 2px solid var(--red); outline-offset: -3px; }
+.mapa__lienzo.arrastrando { cursor: grabbing; }
+.mapa__lienzo.eligiendo, .mapa__lienzo.eligiendo .pin { cursor: crosshair; }
+.mapa__lienzo > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.m-mar-l { stroke: var(--hair-2); stroke-width: .55; }
+.m-mar { fill: var(--paper); }
+.m-muni { fill: var(--paper-2); stroke: var(--hair-2); stroke-width: .7; vector-effect: non-scaling-stroke; }
+.m-bcn { fill: var(--card); stroke: var(--ink); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.m-verde-fondo { fill: color-mix(in srgb, var(--green) 9%, var(--card)); }
+.m-verde-p { fill: var(--green); opacity: .55; }
+.m-dist { fill: none; stroke: var(--ink); stroke-opacity: .32; stroke-width: .9; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+.m-pri { fill: none; stroke: var(--ink); stroke-opacity: .5; stroke-width: 1.1; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.m-sec { fill: none; stroke: var(--ink); stroke-opacity: .17; stroke-width: .8; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.m-rio { fill: none; stroke: var(--ink-2); stroke-opacity: .55; stroke-width: 1.8; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+svg[data-z="1"] .m-sec { stroke-opacity: .09; }
+.m-rot { pointer-events: none; }
+.m-rot-dist {
+  font: 400 calc(var(--u) * 15px) var(--display); letter-spacing: calc(var(--u) * 2.4px);
+  text-transform: uppercase; fill: var(--ink); fill-opacity: .3; text-anchor: middle; dominant-baseline: middle;
+}
+.m-rot-muni { font: italic 400 calc(var(--u) * 12.5px) var(--serif); fill: var(--muted); text-anchor: middle; dominant-baseline: middle; }
+.m-rot-av {
+  font: 500 calc(var(--u) * 9px) var(--mono); letter-spacing: calc(var(--u) * 1.2px); text-transform: uppercase;
+  fill: var(--ink-2); paint-order: stroke; stroke: var(--card); stroke-width: calc(var(--u) * 3.5px); stroke-linejoin: round;
+}
+.m-rot-rio { font: italic 400 calc(var(--u) * 13px) var(--serif); fill: var(--ink-2); text-anchor: middle; paint-order: stroke; stroke: var(--paper-2); stroke-width: calc(var(--u) * 3px); }
+.m-rot-mar { font: italic 400 calc(var(--u) * 21px) var(--serif); letter-spacing: calc(var(--u) * 6px); fill: var(--muted); text-anchor: middle; paint-order: stroke; stroke: var(--paper); stroke-width: calc(var(--u) * 5px); }
+svg[data-z="1"] .m-rot-av { display: none; }
+svg[data-z="3"] .m-rot-dist { fill-opacity: .16; }
+.m-anillo { fill: color-mix(in srgb, var(--red) 5%, transparent); stroke: var(--red); stroke-width: 1.2; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+.m-anillo-t { font: 500 calc(var(--u) * 9.5px) var(--mono); letter-spacing: calc(var(--u) * .8px); text-transform: uppercase; fill: var(--red); text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: calc(var(--u) * 3px); }
+
+.m-capa { position: absolute; inset: 0; pointer-events: none; }
+.pin { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 0; padding: 0; background: none; pointer-events: auto; color: var(--ink); }
+.pin:focus-visible { outline: none; }
+.pin:focus-visible .pin__tag { outline: 2px solid var(--red); outline-offset: 2px; }
+.pin__punto {
+  position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%;
+  background: var(--ink); box-shadow: 0 0 0 2.5px var(--card); transition: transform .15s;
+}
+.pin__tag {
+  position: absolute; display: flex; align-items: baseline; gap: 7px; white-space: nowrap; width: max-content;
+  padding: 5px 8px 4px; background: var(--card); border: 1px solid var(--ink); box-shadow: 2px 2px 0 var(--ink);
+  transition: background .12s, color .12s;
+}
+.pin__tag b { font: 400 17px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; font-weight: 400; }
+.pin__tag span { font: 500 11.5px/1 var(--mono); }
+.pin[data-pos="ne"] .pin__tag { left: 7px; bottom: 7px; }
+.pin[data-pos="nw"] .pin__tag { right: 7px; bottom: 7px; }
+.pin[data-pos="se"] .pin__tag { left: 7px; top: 7px; }
+.pin[data-pos="sw"] .pin__tag { right: 7px; top: 7px; }
+.pin[data-pos="e"] .pin__tag { left: 11px; top: 0; transform: translateY(-50%); }
+.pin[data-pos="w"] .pin__tag { right: 11px; top: 0; transform: translateY(-50%); }
+.pin[data-pos="no"] .pin__tag { visibility: hidden; left: 7px; bottom: 7px; }
+.pin--mini .pin__tag { padding: 4px 6px 3px; }
+.pin--mini .pin__tag b { display: none; }
+.pin--mini:hover .pin__tag b, .pin--mini.pin--hover .pin__tag b, .pin--mini.pin--sel .pin__tag b { display: inline; }
+.pin--barata .pin__tag { background: var(--yellow); border-color: var(--on-yellow); color: var(--on-yellow); box-shadow: 2px 2px 0 var(--on-yellow); }
+.pin--barata .pin__punto { background: var(--on-yellow); box-shadow: 0 0 0 2.5px var(--yellow); }
+.pin--vacio .pin__punto { background: var(--card); box-shadow: inset 0 0 0 1.5px var(--muted); }
+.pin--vacio .pin__tag { color: var(--muted); border-color: var(--hair-2); box-shadow: none; }
+.pin--vacio[data-pos="no"] { z-index: 0; }
+.pin:hover .pin__tag, .pin--hover .pin__tag { visibility: visible; background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.pin:hover, .pin--hover { z-index: 30 !important; }
+.pin:hover .pin__punto, .pin--hover .pin__punto { transform: scale(1.3); }
+.pin--sel { z-index: 40 !important; }
+.pin--sel .pin__tag { visibility: visible; background: var(--red); border-color: var(--red); color: #fff; box-shadow: 2px 2px 0 var(--ink); }
+.pin--sel .pin__punto { background: var(--red); box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4px var(--red); }
+.pin--sel .pin__punto::after {
+  content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 1.5px solid var(--red);
+  animation: latido 1.6s ease-out infinite;
+}
+@keyframes latido { from { transform: scale(.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+.m-tu {
+  position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; z-index: 20;
+}
+.m-tu i { position: absolute; left: -7px; top: -7px; width: 14px; height: 14px; border: 2px solid var(--red); border-radius: 50%; background: var(--card); }
+.m-tu i::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--red); }
+.m-tu span {
+  position: absolute; left: 12px; top: -9px; font: 500 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--red); background: var(--card); padding: 3px 5px 2px; white-space: nowrap; border: 1px solid var(--red);
+}
+.borde {
+  position: absolute; left: 0; top: 0; pointer-events: auto; display: flex; align-items: center; gap: 6px;
+  border: 1px dashed var(--ink); background: var(--card); padding: 4px 7px 3px; white-space: nowrap;
+  font: 500 10.5px/1 var(--mono); letter-spacing: .03em; color: var(--ink);
+}
+.borde i { font-style: normal; display: inline-block; color: var(--red); font-size: 13px; }
+.borde:hover { background: var(--ink); color: var(--paper); border-style: solid; }
+.m-orienta span {
+  position: absolute; font: 500 10px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2);
+  background: var(--card); padding: 4px 7px 3px; border: 1px solid var(--hair-2); pointer-events: none;
+}
+.m-orienta .o-n { top: 10px; left: 50%; transform: translateX(-50%); }
+.m-orienta .o-s { bottom: 10px; left: 50%; transform: translateX(-50%); }
+.m-orienta .o-e { right: 10px; top: 50%; writing-mode: vertical-rl; transform: translateY(-50%); padding: 7px 4px 7px 3px; }
+.m-orienta .o-w { left: 10px; top: 50%; writing-mode: vertical-rl; transform: translateY(-50%) rotate(180deg); padding: 7px 4px 7px 3px; }
+.m-ctrl { position: absolute; top: 10px; right: 10px; display: grid; gap: 0; pointer-events: auto; border: 1px solid var(--ink); background: var(--card); box-shadow: 2px 2px 0 var(--ink); }
+.m-ctrl button {
+  width: 36px; height: 34px; border: 0; background: none; display: grid; place-items: center; padding: 0;
+  font: 400 22px/1 var(--display); color: var(--ink);
+}
+.m-ctrl button + button { border-top: 1px solid var(--hair-2); }
+.m-ctrl button:hover { background: var(--ink); color: var(--paper); }
+.m-ctrl button[aria-pressed="true"] { background: var(--red); color: #fff; }
+.m-ctrl svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.m-escala { position: absolute; left: 12px; bottom: 12px; display: flex; align-items: flex-end; gap: 6px; font: 500 10px/1 var(--mono); color: var(--ink-2); pointer-events: none; }
+.m-escala i { display: block; height: 6px; border: 1.5px solid var(--ink); border-top: 0; }
+.m-cred { position: absolute; right: 8px; bottom: 6px; font: 400 9.5px/1 var(--mono); color: var(--muted); pointer-events: none; }
+.m-aviso {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none;
+  background: var(--ink); color: var(--paper); padding: 12px 16px 11px; font: 500 12px/1.4 var(--mono); letter-spacing: .03em;
+  text-align: center; max-width: 80%; opacity: 0; transition: opacity .2s; z-index: 50;
+}
+.m-aviso.ver { opacity: .94; }
+
+.mapa__panel { height: min(78vh, 800px); min-height: 520px; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 24px; }
+.mp-tit { margin: 4px 0 0; font: 400 34px/.95 var(--display); text-transform: uppercase; }
+.mp-sub { margin: 8px 0 0; font: 400 12px/1.45 var(--mono); color: var(--ink-2); }
+.mp-lista { list-style: none; margin: 14px 0 0; padding: 0; counter-reset: sala; }
+.mp-fila {
+  width: 100%; border: 0; border-top: 1px dotted var(--hair-2); background: none; text-align: left;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 10px 6px 11px; margin: 0 -6px;
+  width: calc(100% + 12px);
+}
+.mp-fila:hover, .mp-fila.activa { background: var(--paper-2); }
+.mp-fila b { font-size: 17px; font-weight: 600; line-height: 1.2; }
+.mp-fila small { grid-column: 1; font: 400 11px/1.4 var(--mono); color: var(--muted); }
+.mp-fila strong { grid-column: 2; grid-row: 1 / span 2; align-self: center; font: 400 30px/1 var(--display); font-weight: 400; }
+.mp-fila.barata strong { color: var(--red); }
+.mp-sin { margin-top: 14px; font: 400 12px/1.5 var(--mono); color: var(--muted); }
+.mp-sin summary { cursor: pointer; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+.mp-sin ul { list-style: none; padding: 6px 0 0; margin: 0; }
+.mp-sin li button { border: 0; background: none; padding: 2px 0; font: inherit; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--hair-2); text-underline-offset: 3px; }
+.mp-leyenda { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--ink); display: grid; gap: 7px; font: 400 11px/1.35 var(--mono); color: var(--ink-2); }
+.mp-leyenda div { display: flex; align-items: center; gap: 9px; }
+.mp-leyenda i { flex: none; display: inline-block; width: 26px; height: 14px; border: 1px solid var(--ink); background: var(--card); }
+.mp-leyenda i.y { background: var(--yellow); }
+.mp-leyenda i.r { background: var(--red); border-color: var(--red); }
+.mp-leyenda i.v { border-color: var(--hair-2); border-radius: 50%; width: 12px; height: 12px; margin: 0 7px; }
+.mp-volver { border: 0; background: none; padding: 0; font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--red); }
+.mp-volver:hover { text-decoration: underline; text-underline-offset: 3px; }
+.mp-tarifa { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; padding: 10px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--hair-2); }
+.mp-tarifa b { font: 400 40px/1 var(--display); color: var(--red); }
+.mp-tarifa span { font: 400 11.5px/1.35 var(--mono); color: var(--ink-2); }
+.mp-h4 { margin: 18px 0 2px; font: 400 22px/1 var(--display); text-transform: uppercase; }
+.mp-h4 small { font: 400 11px var(--mono); text-transform: none; color: var(--muted); margin-left: 6px; }
+.mp-pelis { list-style: none; margin: 0; padding: 0; }
+.mp-pelis li { padding: 10px 0; border-top: 1px dotted var(--hair-2); }
+.mp-pelis li > button { border: 0; background: none; padding: 0; margin-bottom: 7px; font: 600 16px/1.2 var(--serif); text-align: left; }
+.mp-pelis li > button:hover { color: var(--red); }
+.enlace-mapa { border: 0; background: none; padding: 0; font: inherit; letter-spacing: inherit; text-transform: inherit; text-decoration: underline; text-underline-offset: 3px; color: inherit; }
+
+/* tarjeta flotante de la sala elegida (sólo móvil) */
+.m-card { display: none; }
+
+/* ---------- móvil ---------- */
+@media (max-width: 1100px) {
+  .cuerpo { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .lateral { order: -1; padding-top: 18px; }
+  .lateral__pegado { position: static; grid-template-columns: 1fr 1fr; align-items: start; }
+  .caja--leyenda { display: none; }
+  .grupo--franja, .grupo--precio, .grupo--version, .grupo--formato, .grupo--donde { grid-column: span 6; }
+}
+@media (max-width: 760px) {
+  .envoltorio { padding: 0 16px; }
+  body { font-size: 16px; }
+  .linea-sup { font-size: 10.5px; gap: 4px 12px; }
+  .linea-sup .solo-ancho { display: none; }
+  .cabecera__main { grid-template-columns: 1fr; gap: 14px; padding-bottom: 16px; }
+  .marca { font-size: clamp(64px, 23vw, 120px); }
+  .busca { grid-template-columns: 1fr; padding-top: 24px; }
+  .busca__lbl { padding-top: 0; }
+  .busca__lbl b { display: inline; font-size: 24px; }
+  .busca__lbl .etq { display: none; }
+  .sugerencias { grid-column: 1; }
+  .dias { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .dia { flex: 0 0 104px; scroll-snap-align: start; min-height: 88px; }
+  .filtros { display: none; grid-template-columns: 1fr; }
+  .filtros.abierto { display: grid; }
+  .grupo--franja, .grupo--precio, .grupo--version, .grupo--formato, .grupo--donde { grid-column: 1 / -1; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; margin-right: -16px; padding-right: 16px; }
+  .abrir-filtros {
+    display: flex; width: 100%; justify-content: space-between; align-items: center; margin-top: 14px;
+    border: 1px solid var(--ink); background: none; padding: 12px 14px 11px;
+    font: 500 12px/1 var(--mono); letter-spacing: .07em; text-transform: uppercase;
+  }
+  .abrir-filtros b { background: var(--red); color: #fff; padding: 3px 6px 2px; font-weight: 500; }
+  .lateral__pegado { grid-template-columns: 1fr; }
+  .caja--tarifas { display: none; }
+  .barra { flex-direction: column; gap: 0; align-items: stretch; }
+  .vistas { overflow-x: auto; }
+  .vista { font-size: 22px; padding: 14px 12px 10px 0; white-space: nowrap; }
+  .orden { padding: 8px 0 10px; border-top: 1px dotted var(--hair-2); }
+  .peli { grid-template-columns: 78px minmax(0, 1fr); gap: 14px; }
+  .poster { width: 78px; }
+  .peli__cab { flex-direction: column; gap: 6px; }
+  .desde { text-align: left; display: flex; gap: 8px; align-items: baseline; }
+  .desde b { font-size: 28px; }
+  .peli__sinopsis { display: none; }
+  .salas { grid-column: 1 / -1; }
+  .sala, .cine .salas .sala { grid-template-columns: 1fr; gap: 8px; }
+  .peli > .peli__cuerpo { display: contents; }
+  .peli__cab-wrap { grid-column: 2; }
+  .mas { grid-column: 1 / -1; justify-self: start; }
+  .cine__cab { flex-direction: column; gap: 6px; }
+  .cine__tarifa { text-align: left; }
+  .cine__tarifa span { margin-left: 0; max-width: none; }
+  .tk { grid-template-columns: 74px minmax(0, 1fr) 84px; }
+  .tk__hora { font-size: 30px; }
+  .tk__precio { padding-left: 10px; }
+  .tk__precio b { font-size: 28px; }
+  .tk__peli b { font-size: 16px; }
+  .pie__cols { grid-template-columns: 1fr; gap: 24px; }
+  .mapa { grid-template-columns: 1fr; margin-left: -16px; margin-right: -16px; border-left: 0; border-right: 0; }
+  .mapa__lienzo { height: 64vh; min-height: 420px; border-right: 0; border-bottom: 1px solid var(--ink); }
+  .mapa__panel { height: auto; min-height: 0; overflow: visible; padding: 16px; }
+  .pin__tag b { font-size: 15px; }
+  .pin__tag span { font-size: 10.5px; }
+  .m-ctrl button { width: 40px; height: 38px; }
+  .m-card:not([hidden]) {
+    display: flex; position: absolute; left: 10px; right: 10px; bottom: 30px; z-index: 45; gap: 10px;
+    align-items: center; justify-content: space-between; background: var(--card); border: 1px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink); padding: 10px 10px 10px 14px;
+  }
+  .m-card b { display: block; font: 400 22px/1 var(--display); text-transform: uppercase; }
+  .m-card span { display: block; margin-top: 3px; font: 400 11px/1.3 var(--mono); color: var(--ink-2); }
+  .m-card .btn { padding: 10px 11px 9px; flex: none; }
+  .m-orienta .o-e, .m-orienta .o-w { display: none; }
+  .cuerpo--mapa .barra { position: static; }
+  .entrada__cab, .entrada__datos, .entrada__precio, .entrada__acc { padding-left: 18px; padding-right: 18px; }
+  .entrada__cab { padding-right: 50px; }
+  .entrada__datos { grid-template-columns: 1fr; }
+  .entrada__precio { flex-direction: column; align-items: flex-start; }
+  .entrada__precio p { text-align: left; }
+  .entrada__precio b { font-size: 52px; }
+  .ficha__cab { grid-template-columns: 92px minmax(0, 1fr); gap: 14px; padding: 20px 18px 16px; }
+  .ficha__cab .poster { width: 92px; }
+  .ficha__cuerpo { padding: 4px 18px 22px; }
+}
+@media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
+</style>
+</head>
+<body>
+
+<div class="envoltorio">
+  <header class="cabecera">
+    <div class="linea-sup">
+      <span>Barcelona</span>
+      <span id="fechaLarga"></span>
+      <span class="solo-ancho" id="edicion"></span>
+      <span class="sep"></span>
+      <span class="solo-ancho" id="actualizado"></span>
+      <button class="luces" id="luces" type="button">Apagar las luces</button>
+    </div>
+    <div class="cabecera__main">
+      <h1 class="marca">Sessió <em>Contínua</em></h1>
+      <div>
+        <p class="lema">Todos los cines de Barcelona en una página: qué echan, a qué hora, en qué versión y cuánto te va a costar.</p>
+        <dl class="cifras">
+          <div><dt>Salas</dt><dd id="nCines">–</dd></div>
+          <div><dt>Películas</dt><dd id="nPelis">–</dd></div>
+          <div><dt id="nHoyLbl">Pases hoy</dt><dd id="nHoy">–</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div id="avisos"></div>
+  </header>
+
+  <section class="busca" role="search">
+    <label class="busca__lbl" for="q"><span class="etq">01 —</span> <b>¿Qué quieres ver?</b></label>
+    <div class="campo" id="campo">
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Una película, un director, una sala o un barrio…">
+      <button class="borrar" id="borrar" type="button" aria-label="Borrar búsqueda">×</button>
+      <kbd title="Pulsa / para buscar">/</kbd>
+    </div>
+    <p class="sugerencias" id="sugerencias"></p>
+  </section>
+
+  <nav class="dias" id="dias" aria-label="Elige el día"></nav>
+
+  <button class="abrir-filtros" id="abrirFiltros" type="button" aria-expanded="false" aria-controls="filtros">
+    <span>Hora, precio, versión y zona</span><b id="nFiltros" hidden>0</b>
+  </button>
+
+  <section class="filtros" id="filtros" aria-label="Filtros">
+    <div class="grupo grupo--franja">
+      <span class="etq">A qué hora</span>
+      <div class="chips" id="fFranja"></div>
+    </div>
+    <div class="grupo grupo--precio">
+      <label class="etq" for="fPrecio">Lo máximo que pagas</label>
+      <div class="precio">
+        <input id="fPrecio" type="range" min="2" max="15" step="0.5" value="15">
+        <output id="fPrecioOut" for="fPrecio">Sin límite</output>
+      </div>
+    </div>
+    <div class="grupo grupo--version">
+      <span class="etq">Versión</span>
+      <div class="chips" id="fVersion"></div>
+    </div>
+    <div class="grupo grupo--formato">
+      <span class="etq">Formato</span>
+      <div class="chips" id="fFormato"></div>
+    </div>
+    <div class="grupo grupo--donde">
+      <span class="etq">Dónde</span>
+      <div class="donde">
+        <span class="chips" id="fZona"></span>
+        <select id="fCerca" aria-label="Estoy cerca de">
+          <option value="">Estoy cerca de…</option>
+        </select>
+        <button class="chip" id="fGeo" type="button">Usar mi ubicación</button>
+      </div>
+    </div>
+    <div class="filtros__pie">
+      <label class="check"><input type="checkbox" id="fPasadas" checked> Ocultar los pases que ya han empezado</label>
+      <button class="limpiar" id="limpiar" type="button">Quitar todos los filtros</button>
+    </div>
+  </section>
+
+  <main class="cuerpo">
+    <div class="resultados">
+      <div class="barra">
+        <div class="vistas" role="tablist" aria-label="Cómo ver la cartelera">
+          <button class="vista" role="tab" data-vista="pelis" aria-selected="true">Por película</button>
+          <button class="vista" role="tab" data-vista="cines" aria-selected="false">Por cine</button>
+          <button class="vista" role="tab" data-vista="sesiones" aria-selected="false">Todos los pases</button>
+          <button class="vista" role="tab" data-vista="mapa" aria-selected="false">En el mapa</button>
+        </div>
+        <label class="orden"><span class="etq">Ordenar</span><select id="orden"></select></label>
+      </div>
+      <p class="recuento" id="recuento" aria-live="polite"></p>
+      <div id="lista"></div>
+      <div id="mapaVista" hidden></div>
+    </div>
+
+    <aside class="lateral">
+      <div class="lateral__pegado">
+        <section class="caja caja--mejor">
+          <h2 class="caja__tit">Lo que mejor sale <small id="mejorSub"></small></h2>
+          <ul class="mejor" id="mejor"></ul>
+        </section>
+        <section class="caja caja--tarifas">
+          <h2 class="caja__tit"><span>La entrada, <span id="tarifaDia">hoy</span></span></h2>
+          <ul class="tarifas" id="tarifas"></ul>
+          <div class="caja__pie" id="tarifasPie"></div>
+        </section>
+        <section class="caja caja--leyenda">
+          <h2 class="caja__tit">Versiones</h2>
+          <dl class="leyenda" id="leyenda"></dl>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="pie">
+    <div class="pie__cols">
+      <div>
+        <h4>De dónde sale todo esto</h4>
+        <p>Los horarios se recogen de Sensacine (que publica la programación de casi todas las salas comerciales), de las webs del Cinema Maldà y del Espai Texas, y del programa mensual de la Filmoteca de Catalunya.</p>
+        <p>Los precios son las tarifas que publica cada sala, con su día del espectador, matinales y suplementos. Cuando una tarifa no está confirmada lo verás marcado como <b>aprox.</b> Las promociones, carnets y descuentos personales no se cuentan.</p>
+        <p>El plano está dibujado aquí mismo con datos de © colaboradores de OpenStreetMap, girado como se orienta uno en Barcelona: montaña arriba, mar abajo.</p>
+        <p>Para traer la cartelera del día: <code>python actualizar_cartelera.py</code></p>
+      </div>
+      <div>
+        <h4>Sin horarios esta semana</h4>
+        <ul id="sinHorarios"></ul>
+      </div>
+      <div>
+        <h4>Ya no están</h4>
+        <ul id="cerrados"></ul>
+      </div>
+    </div>
+    <div class="colofon">
+      <span>Sessió Contínua · cartelera de Barcelona</span>
+      <span id="colofonFecha"></span>
+      <span>Los cines cambian horarios: confirma antes de salir</span>
+    </div>
+  </footer>
+</div>
+
+<dialog id="dlgEntrada" aria-labelledby="entradaTit"></dialog>
+<dialog id="dlgFicha" class="grande" aria-labelledby="fichaTit"></dialog>
+
+<script src="data/mapa.js"></script>
+<script src="data/cartelera.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const D = window.CARTELERA;
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  if (!D) {
+    $('#lista').innerHTML = `<div class="vacio"><h3>Falta la cartelera</h3>
+      <p>No encuentro <code>data/cartelera.js</code>. Ejecuta <code>python actualizar_cartelera.py</code> en esta carpeta y recarga.</p></div>`;
+    return;
+  }
+
+  // ------------------------------------------------------------ utilidades
+  const normal = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const DS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+  const DC = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'];
+  const MS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const pad = (n) => String(n).padStart(2, '0');
+  const isoDe = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const aMin = (h) => +h.slice(0, 2) * 60 + +h.slice(3, 5);
+  const deMin = (m) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+  const num = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ','));
+  const eur = (v) => (v == null ? 'Consultar' : v === 0 ? 'Gratis' : `${num(v)} €`);
+  const may = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const durTxt = (m) => (m ? `${Math.floor(m / 60)} h ${pad(m % 60)} min`.replace(/^0 h /, '') : '');
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* modo privado */ } };
+  const leer = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+
+  const VER = {
+    VOSE: { t: 'VOSE', g: 'vo', l: 'Versión original con subtítulos en castellano' },
+    VO: { t: 'VO', g: 'vo', l: 'Versión original (subtitulada si no es en castellano)' },
+    VOSC: { t: 'VOSC', g: 'vo', l: 'Versión original con subtítulos en catalán' },
+    VOSI: { t: 'VOSI', g: 'vo', l: 'Versión original con subtítulos en inglés' },
+    Muda: { t: 'MUDA', g: 'vo', l: 'Cine mudo, con rótulos' },
+    VOE: { t: 'CAST', g: 'es', l: 'Rodada en castellano' },
+    DOB: { t: 'DOBL', g: 'es', l: 'Doblada al castellano' },
+    CAT: { t: 'CAT', g: 'cat', l: 'Doblada o rodada en catalán' },
+    VOC: { t: 'CAT', g: 'cat', l: 'Rodada en catalán' },
+  };
+  const ver = (v) => VER[v] || { t: v, g: 'vo', l: v };
+  const GRUPOS = [['vo', 'V.O. subtitulada'], ['es', 'En castellano'], ['cat', 'En català']];
+  const FRANJAS = [
+    ['todo', 'Todo el día', null],
+    ['ahora', 'Próximas 2 h', null],
+    ['matinal', 'Matinal', 'antes de 15 h', [0, 899]],
+    ['tarde', 'Tarde', '15–20 h', [900, 1199]],
+    ['noche', 'Noche', '20–22:30', [1200, 1349]],
+    ['golfa', 'Golfa', 'desde 22:30', [1350, 9999]],
+  ];
+  const SITIOS = [
+    ['Plaça de Catalunya', 41.3870, 2.1700], ['Universitat', 41.3858, 2.1636], ['Passeig de Gràcia', 41.3917, 2.1649],
+    ['Sants Estació', 41.3791, 2.1400], ['Plaça d’Espanya', 41.3750, 2.1491], ['Sagrada Família', 41.4036, 2.1744],
+    ['Gràcia (Fontana)', 41.4025, 2.1527], ['Glòries', 41.4036, 2.1874], ['Poblenou (Rambla)', 41.4031, 2.2036],
+    ['Barceloneta', 41.3807, 2.1894], ['Les Corts (Camp Nou)', 41.3809, 2.1228], ['Sarrià', 41.3994, 2.1220],
+    ['Sant Andreu', 41.4355, 2.1898], ['Nou Barris (Virrei Amat)', 41.4300, 2.1745], ['Horta', 41.4300, 2.1600],
+    ['L’Hospitalet (Rambla Just Oliveras)', 41.3633, 2.1013], ['Badalona (centre)', 41.4500, 2.2474],
+  ];
+
+  // ------------------------------------------------------------ datos
+  const FEST = new Set(D.festivos || []);
+  const ahora = new Date();
+  const hoyISO = isoDe(ahora);
+  const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+  const DIAS = D.fechas.map((iso, i) => {
+    const d = new Date(`${iso}T12:00:00`);
+    return { i, iso, d, dow: (d.getDay() + 6) % 7, num: d.getDate(), mes: d.getMonth(), hoy: iso === hoyISO };
+  });
+  const hoyIdx = D.fechas.indexOf(hoyISO);
+  const caducada = hoyISO > D.fechas[D.fechas.length - 1];
+
+  const CINES = D.cines.map((c, i) => ({
+    ...c, i, n: 0, km: null,
+    norm: normal([c.nombre, c.corto, c.barrio, c.distrito, c.cadena, c.dir].join(' ')),
+  }));
+  const PELIS = D.peliculas.map((p, i) => ({
+    ...p, i, n: 0,
+    norm: normal([p.titulo, p.original, p.alt, ...(p.direccion || []), ...(p.reparto || []), ...(p.generos || [])].join(' ')),
+  }));
+
+  function tarifa(c, dia, min, v, fx, gratis) {
+    if (gratis) return { v: 0, motivo: 'Entrada gratuita', fiable: true, extras: [] };
+    const P = c.precio;
+    if (!P) return { v: null, motivo: 'La sala no publica precios', fiable: false, extras: [] };
+    const fest = FEST.has(dia.iso);
+    let precio = fest ? P.festivo : P.dias[dia.dow];
+    const normales = P.dias.filter((_, k) => !P.espectador.includes(k));
+    const base = normales.length ? Math.min(...normales) : precio;
+    let motivo = fest ? 'Festivo'
+      : P.espectador.includes(dia.dow) ? 'Día del espectador'
+      : precio > base ? (dia.dow >= 4 ? 'Fin de semana' : 'Tarifa de ese día')
+      : 'Tarifa general';
+    const M = P.matinal;
+    if (M && min < aMin(M.antes) && (!M.dias || M.dias.includes(dia.dow)) && M.precio < precio) {
+      precio = M.precio; motivo = 'Sesión matinal';
+    }
+    if (P.vose && ver(v).g === 'vo' && P.vose < precio) { precio = P.vose; motivo = 'V.O. a precio fijo'; }
+    const extras = [];
+    for (const f of fx) {
+      const e = P.extra && P.extra[f];
+      if (e) { precio += e; extras.push(`${f} +${num(e)} €`); }
+    }
+    return { v: Math.round(precio * 100) / 100, motivo, fiable: !!P.fiable, extras };
+  }
+
+  const SES = D.sesiones.map((r, id) => {
+    const [ci, pi, di, h, v, fmt, url, nota, gratis] = r;
+    const c = CINES[ci]; const p = PELIS[pi]; const dia = DIAS[di];
+    let min = aMin(h);
+    if (min < 300) min += 1440; // las de madrugada son la golfa del día anterior
+    const fx = fmt ? fmt.split(',') : [];
+    c.n++; p.n++;
+    return {
+      id, c, p, dia, h, min, v, fx, nota: nota || '', gratis: !!gratis,
+      url: url ? (/^https?:/.test(url) ? url : (c.compra || '') + url) : '',
+      pr: tarifa(c, dia, min, v, fx, gratis),
+      pasada: dia.iso === hoyISO && min < minAhora,
+      hay: `${p.norm} ${c.norm} ${normal(ver(v).t)} ${normal(fx.join(' '))}`,
+    };
+  });
+  const precios = SES.map((s) => s.pr.v).filter((v) => v != null && v > 0);
+  const PRECIO_TOPE = Math.ceil(Math.max(...precios));
+  const FORMATOS = [...new Set(SES.flatMap((s) => s.fx))].sort();
+
+  // ------------------------------------------------------------ estado
+  const S = {
+    q: '', tokens: [],
+    dia: hoyIdx >= 0 ? hoyIdx : (caducada ? D.fechas.length - 1 : 0),
+    franja: 'todo', precioMax: null, grupos: new Set(), formatos: new Set(),
+    zona: leer('sc-zona') || 'bcn', vista: 'pelis',
+    orden: { pelis: 'pases', cines: 'precio', sesiones: 'precio', mapa: 'precio' },
+    pos: null, posNombre: '', ocultarPasadas: true, mapaSel: null,
+    abiertas: new Set(), limite: 120,
+  };
+
+  // ------------------------------------------------------------ distancias
+  function km(a, b) {
+    const R = 6371, rad = Math.PI / 180;
+    const dLa = (b.lat - a.lat) * rad, dLo = (b.lon - a.lon) * rad;
+    const x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLo / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+  function distTxt(c) {
+    if (c.km == null) return '';
+    if (c.km < 2.2) return `${Math.max(2, Math.round(c.km * 1.3 / 4.8 * 60))} min a pie`;
+    return `${num(Math.round(c.km * 10) / 10)} km`;
+  }
+  function ponerPosicion(lat, lon, nombre) {
+    S.pos = { lat, lon }; S.posNombre = nombre;
+    for (const c of CINES) c.km = km(S.pos, c);
+    S.orden.cines = 'cerca'; S.orden.mapa = 'cerca';
+    if (S.vista === 'sesiones') S.orden.sesiones = 'cerca';
+    pintar();
+  }
+
+  // ------------------------------------------------------------ filtros
+  function franjaOk(s) {
+    if (S.franja === 'todo') return true;
+    if (S.franja === 'ahora') return s.dia.iso !== hoyISO || (s.min >= minAhora && s.min <= minAhora + 120);
+    const [a, b] = FRANJAS.find((f) => f[0] === S.franja)[3];
+    return s.min >= a && s.min <= b;
+  }
+  function pasa(s, o = {}) {
+    if (S.zona === 'bcn' && s.c.zona !== 'bcn') return false;
+    if (!o.cualquierDia && S.dia !== -1 && s.dia.i !== S.dia) return false;
+    if (S.ocultarPasadas && s.pasada) return false;
+    if (!o.cualquierHora && !franjaOk(s)) return false;
+    if (S.precioMax != null && (s.pr.v == null || s.pr.v > S.precioMax)) return false;
+    if (S.grupos.size && !S.grupos.has(ver(s.v).g)) return false;
+    if (S.formatos.size && !s.fx.some((f) => S.formatos.has(f))) return false;
+    if (!o.sinTexto && S.tokens.length && !S.tokens.every((t) => s.hay.includes(t))) return false;
+    return true;
+  }
+  const filtrados = () => SES.filter((s) => pasa(s));
+  const porHora = (a, b) => a.dia.i - b.dia.i || a.min - b.min;
+  const porPrecio = (a, b) => (a.pr.v ?? 99) - (b.pr.v ?? 99) || porHora(a, b);
+  const porCerca = (a, b) => (a.c.km ?? 99) - (b.c.km ?? 99) || porHora(a, b);
+  const nFiltros = () => (S.franja !== 'todo') + (S.precioMax != null) + S.grupos.size + S.formatos.size + (S.zona !== 'bcn');
+
+  // ------------------------------------------------------------ piezas
+  const PALETA = ['#C8381C', '#1F4E79', '#2D5B4A', '#9A6B12', '#56355F', '#1B1815', '#7A2E2E'];
+  function poster(p, extra = '') {
+    if (p.poster) {
+      return `<span class="poster ${extra}"><img src="${esc(D.poster_base + p.poster)}" alt="" loading="lazy" decoding="async" data-p="${p.i}"></span>`;
+    }
+    return letra(p, extra);
+  }
+  function letraFondo(p) {
+    let h = 0; for (const ch of p.titulo) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return `background:${PALETA[h % PALETA.length]}`;
+  }
+  function letra(p, extra = '') {
+    const fuente = p.id.startsWith('fm') ? 'Filmoteca' : p.id.startsWith('tx') ? 'Espai Texas' : p.id.startsWith('ml') ? 'Maldà' : '';
+    return `<span class="poster poster--letra ${extra}" style="${letraFondo(p)}"><b>${esc(p.titulo)}</b><span>${esc(fuente)}${p.anio ? ` · ${p.anio}` : ''}</span></span>`;
+  }
+  function edad(e) {
+    if (!e) return '';
+    const n = String(e).replace('(i)', '');
+    return n === 'APTA' ? 'Todos los públicos' : `+${n}`;
+  }
+  function meta(p) {
+    const partes = [
+      (p.generos || []).slice(0, 2).join(', '),
+      durTxt(p.duracion),
+      edad(p.edad),
+      (p.direccion || []).length ? `de ${p.direccion.join(' y ')}` : '',
+      [(p.paises || [])[0], p.anio].filter(Boolean).join(' '),
+    ].filter(Boolean);
+    return partes.map(esc).join('<span class="pt">/</span>');
+  }
+  function hora(s, barata, conDia) {
+    const t = `${s.p.titulo} · ${s.c.corto} · ${DS[s.dia.dow]} ${s.h} · ${ver(s.v).l}${s.pr.v != null ? ` · ${eur(s.pr.v)} (${s.pr.motivo})` : ''}`;
+    return `<button class="hora${barata ? ' hora--barata' : ''}${s.pasada ? ' hora--pasada' : ''}" data-s="${s.id}" title="${esc(t)}">`
+      + (conDia ? `<span class="hora__d">${DC[s.dia.dow]} ${s.dia.num}</span>` : '')
+      + `<span class="hora__t">${s.h}</span><span class="hora__v">${esc(ver(s.v).t)}${s.fx.length ? ` ${esc(s.fx.join(' '))}` : ''}</span>`
+      + `<span class="hora__p">${eur(s.pr.v)}${s.pr.v != null && !s.pr.fiable && s.pr.v > 0 ? ' <i>aprox.</i>' : ''}</span></button>`;
+  }
+  function salaSub(c) {
+    return [c.barrio, c.transporte, distTxt(c)].filter(Boolean).map(esc).join(' · ');
+  }
+  function agrupar(lista, clave) {
+    const m = new Map();
+    for (const s of lista) { const k = clave(s); if (!m.has(k)) m.set(k, []); m.get(k).push(s); }
+    return m;
+  }
+  const minimo = (lista) => {
+    const v = lista.map((s) => s.pr.v).filter((x) => x != null);
+    return v.length ? Math.min(...v) : null;
+  };
+
+  // ------------------------------------------------------------ vistas
+  function vistaPelis(F) {
+    const grupos = [...agrupar(F, (s) => s.p).entries()].map(([p, ses]) => ({
+      p, ses, min: minimo(ses), primera: Math.min(...ses.map((s) => s.dia.i * 3000 + s.min)),
+    }));
+    const o = S.orden.pelis;
+    grupos.sort((a, b) =>
+      o === 'precio' ? (a.min ?? 99) - (b.min ?? 99) || b.p.n - a.p.n
+      : o === 'pronto' ? a.primera - b.primera
+      : o === 'critica' ? (b.p.prensa || 0) - (a.p.prensa || 0) || b.p.n - a.p.n
+      : o === 'az' ? a.p.titulo.localeCompare(b.p.titulo, 'es')
+      : o === 'estreno' ? String(b.p.estreno || '').localeCompare(String(a.p.estreno || '')) || b.p.n - a.p.n
+      : b.p.n - a.p.n);
+    const semana = S.dia === -1;
+    return grupos.map(({ p, ses, min }) => {
+      const salas = [...agrupar(ses, (s) => s.c).entries()]
+        .map(([c, l]) => ({ c, l: l.sort(porHora), min: minimo(l) }))
+        .sort((a, b) => (S.pos ? a.c.km - b.c.km : 0) || (a.min ?? 99) - (b.min ?? 99) || a.c.corto.localeCompare(b.c.corto));
+      const abierta = S.abiertas.has(p.id) || salas.length <= 5;
+      const vis = abierta ? salas : salas.slice(0, 4);
+      const filas = vis.map(({ c, l }) => `<li class="sala">
+          <div class="sala__nom"><button data-cine="${c.i}">${esc(c.nombre)}</button><span class="sala__sub">${salaSub(c)}</span></div>
+          <div class="horas">${l.map((s) => hora(s, min != null && s.pr.v === min && salas.length > 1, semana)).join('')}</div>
+        </li>`).join('');
+      const orig = p.original && normal(p.original) !== normal(p.titulo) ? `<span class="peli__orig">${esc(p.original)}</span>` : '';
+      return `<article class="peli">
+        <button class="peli__poster" data-ficha="${p.i}" aria-label="Ficha de ${esc(p.titulo)}">${poster(p)}</button>
+        <div class="peli__cuerpo">
+          <div class="peli__cab-wrap">
+            <div class="peli__cab">
+              <h3 class="peli__titulo"><button data-ficha="${p.i}">${esc(p.titulo)}</button>${orig}</h3>
+              <div class="desde"><span class="etq">${salas.length > 1 ? 'desde' : 'entrada'}</span><b class="${min != null && min <= 6 ? 'rojo' : ''}">${eur(min)}</b></div>
+            </div>
+            <p class="peli__meta">${meta(p)}<span class="pt">/</span>${salas.length} ${salas.length === 1 ? 'sala' : 'salas'}, ${ses.length} ${ses.length === 1 ? 'pase' : 'pases'}</p>
+            ${p.sinopsis ? `<p class="peli__sinopsis">${esc(p.sinopsis)}</p>` : ''}
+          </div>
+          <ul class="salas">${filas}</ul>
+          ${salas.length > vis.length ? `<button class="mas" data-mas="${esc(p.id)}">Ver las ${salas.length - vis.length} salas que faltan ↓</button>`
+            : (S.abiertas.has(p.id) && salas.length > 5 ? `<button class="mas" data-mas="${esc(p.id)}">Recoger ↑</button>` : '')}
+        </div>
+      </article>`;
+    }).join('');
+  }
+  function tarifaHoy(c) {
+    const dia = DIAS[S.dia === -1 ? Math.max(0, hoyIdx) : S.dia];
+    return tarifa(c, dia, 19 * 60, 'DOB', [], false);
+  }
+
+  function vistaCines(F) {
+    const m = agrupar(F, (s) => s.c);
+    const lista = [...m.entries()].map(([c, ses]) => ({ c, ses, t: tarifaHoy(c) }));
+    const o = S.orden.cines;
+    lista.sort((a, b) =>
+      o === 'cerca' && S.pos ? a.c.km - b.c.km
+      : o === 'az' ? a.c.nombre.localeCompare(b.c.nombre, 'es')
+      : o === 'pases' ? b.ses.length - a.ses.length
+      : (a.t.v ?? 99) - (b.t.v ?? 99) || a.c.nombre.localeCompare(b.c.nombre, 'es'));
+    const semana = S.dia === -1;
+    return lista.map(({ c, ses, t }) => {
+      const pelis = [...agrupar(ses.sort(porHora), (s) => s.p).entries()]
+        .sort((a, b) => a[1][0].dia.i - b[1][0].dia.i || a[1][0].min - b[1][0].min);
+      const abierta = S.abiertas.has(c.id) || pelis.length <= 7;
+      const vis = abierta ? pelis : pelis.slice(0, 6);
+      const mapa = `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}`;
+      return `<article class="cine" id="cine-${c.id}">
+        <div class="cine__cab">
+          <div>
+            <span class="cine__cadena">${esc(c.cadena)}${c.zona === 'amb' ? ' · Área metropolitana' : ''}</span>
+            <h3 class="cine__nom">${esc(c.nombre)}</h3>
+            <p class="cine__dir">${esc(c.dir)} · ${esc(c.barrio)} · ${esc(c.transporte)}${c.km != null ? ` · ${distTxt(c)}` : ''}</p>
+            ${c.precio && c.precio.nota ? `<p class="cine__nota">${esc(c.precio.nota)}</p>` : ''}
+            <div class="enlaces">${c.web ? `<a href="${esc(c.web)}" target="_blank" rel="noopener">Web de la sala ↗</a>` : ''}<a href="${mapa}" target="_blank" rel="noopener">Cómo llegar ↗</a><button class="enlace-mapa" type="button" data-mapa="${c.i}">Ver en el mapa</button></div>
+          </div>
+          <div class="cine__tarifa"><span class="etq">${semana ? 'Entrada hoy' : `Entrada el ${DC[DIAS[S.dia].dow]}`}</span><b>${eur(t.v)}</b><span>${esc(t.motivo)}${t.v != null && !t.fiable ? ' · aprox.' : ''}</span></div>
+        </div>
+        <ul class="salas">${vis.map(([p, l]) => `<li class="sala">
+            <div class="sala__nom"><button data-ficha="${p.i}">${esc(p.titulo)}</button><span class="sala__sub">${[durTxt(p.duracion), edad(p.edad)].filter(Boolean).map(esc).join(' · ')}</span></div>
+            <div class="horas">${l.map((s) => hora(s, false, semana)).join('')}</div>
+          </li>`).join('')}</ul>
+        ${pelis.length > vis.length ? `<button class="mas" data-mas="${esc(c.id)}">Ver ${pelis.length - vis.length} películas más ↓</button>`
+          : (S.abiertas.has(c.id) && pelis.length > 7 ? `<button class="mas" data-mas="${esc(c.id)}">Recoger ↑</button>` : '')}
+      </article>`;
+    }).join('');
+  }
+
+  function vistaSesiones(F) {
+    const o = S.orden.sesiones;
+    const l = [...F].sort(o === 'hora' ? porHora : o === 'cerca' && S.pos ? porCerca : porPrecio);
+    const min = minimo(l);
+    const semana = S.dia === -1;
+    const filas = l.slice(0, S.limite).map((s) => `<li class="tk${o === 'precio' && s.pr.v === min ? ' tk--top' : ''}" data-s="${s.id}" tabindex="0" role="button">
+        <div class="tk__hora">${s.h}<small>${semana || !s.dia.hoy ? `${DC[s.dia.dow]} ${s.dia.num}` : 'hoy'}</small></div>
+        <div class="tk__peli"><b>${esc(s.p.titulo)}</b><span>${esc(s.c.nombre)} · ${esc(s.c.barrio)} · ${esc(ver(s.v).t)}${s.fx.length ? ` · ${esc(s.fx.join(' '))}` : ''}${s.c.km != null ? ` · ${distTxt(s.c)}` : ''}</span></div>
+        <div class="tk__precio"><b>${eur(s.pr.v)}</b><small>${esc(s.pr.motivo)}${s.pr.v != null && !s.pr.fiable && s.pr.v > 0 ? ' · aprox.' : ''}</small></div>
+      </li>`).join('');
+    return `<ul class="tks">${filas}</ul>${l.length > S.limite ? `<button class="mas-tks" id="masTks">Ver ${Math.min(120, l.length - S.limite)} pases más de ${l.length - S.limite}</button>` : ''}`;
+  }
+
+  function vacio() {
+    const quitar = [];
+    if (S.precioMax != null) quitar.push('subir el precio máximo');
+    if (S.franja !== 'todo') quitar.push('mirar otras horas');
+    if (S.grupos.size) quitar.push('aceptar otras versiones');
+    if (S.zona === 'bcn') quitar.push('incluir el área metropolitana');
+    if (S.dia !== -1) quitar.push('mirar toda la semana');
+    return `<div class="vacio"><h3>Hoy no hay suerte</h3>
+      <p>Con estos filtros no sale ninguna sesión${S.q ? ` para «${esc(S.q)}»` : ''}.${quitar.length ? ` Prueba a ${quitar.slice(0, 3).join(', ')}.` : ''}</p>
+      <button class="btn" id="vacioLimpiar">Quitar filtros</button></div>`;
+  }
+
+  // ------------------------------------------------------------ lateral
+  function pintarMejor(F) {
+    const ul = $('#mejor');
+    const vivos = F.filter((s) => !s.pasada);
+    if (!vivos.length) { ul.innerHTML = '<li><p>Nada que comparar con estos filtros.</p></li>'; $('#mejorSub').textContent = ''; return; }
+    const items = [];
+    const conPrecio = vivos.filter((s) => s.pr.v != null);
+    if (conPrecio.length) items.push(['La más barata', [...conPrecio].sort(porPrecio)[0]]);
+    items.push([S.dia === -1 || DIAS[S.dia].hoy ? 'La próxima' : 'La primera del día', [...vivos].sort(porHora)[0]]);
+    if (S.pos) items.push([`La más cerca de ${S.posNombre}`, [...vivos].sort(porCerca)[0]]);
+    const criticadas = vivos.filter((s) => s.p.prensa);
+    if (criticadas.length > 1) {
+      const top = Math.max(...criticadas.map((s) => s.p.prensa));
+      const cand = criticadas.filter((s) => s.p.prensa === top).sort(porPrecio)[0];
+      items.push([`Mejor crítica · ${num(top)}/5`, cand]);
+    }
+    const vistos = new Set();
+    ul.innerHTML = items.filter(([, s]) => s).map(([t, s]) => {
+      const repetida = vistos.has(s.id); vistos.add(s.id);
+      return `<li><button data-s="${s.id}">
+        <span class="etq">${esc(t)}${repetida ? ' · la misma' : ''}</span>
+        <b>${esc(s.p.titulo)}</b>
+        <span>${esc(s.c.corto)} · ${s.dia.hoy ? 'hoy' : `${DC[s.dia.dow]} ${s.dia.num}`} a las ${s.h} · ${esc(ver(s.v).t)}</span>
+        <strong>${eur(s.pr.v)}</strong>
+      </button></li>`;
+    }).join('');
+    $('#mejorSub').textContent = `entre ${F.length.toLocaleString('es-ES')} pases`;
+  }
+
+  let tarifasTodas = false;
+  function pintarTarifas() {
+    const dia = DIAS[S.dia === -1 ? Math.max(0, hoyIdx) : S.dia];
+    $('#tarifaDia').textContent = dia.hoy ? 'hoy' : `el ${DS[dia.dow]}`;
+    const conSes = new Set(SES.filter((s) => s.dia.i === dia.i).map((s) => s.c));
+    const filas = CINES.filter((c) => (S.zona === 'all' || c.zona === 'bcn') && c.precio)
+      .map((c) => ({ c, t: tarifa(c, dia, 19 * 60, 'DOB', [], false) }))
+      .sort((a, b) => a.t.v - b.t.v || a.c.corto.localeCompare(b.c.corto));
+    const vis = tarifasTodas ? filas : filas.slice(0, 10);
+    const minV = filas.length ? filas[0].t.v : 0;
+    $('#tarifas').innerHTML = vis.map(({ c, t }) => `<li class="${conSes.has(c) ? '' : 'nada'}" title="${esc(t.motivo)}">
+        <span>${esc(c.corto)}</span><span class="lider"></span>
+        <span class="pz${t.v === minV ? ' rojo' : ''}">${eur(t.v)}</span>${t.fiable ? '' : '<span class="q">aprox.</span>'}
+      </li>`).join('');
+    $('#tarifasPie').innerHTML = `Entrada general por la tarde, sin suplementos. En gris, las salas sin pases ese día.
+      ${filas.length > 10 ? `<br><button id="verTarifas">${tarifasTodas ? 'Ver sólo las 10 más baratas' : `Ver las ${filas.length}`}</button>` : ''}`;
+  }
+
+  // ------------------------------------------------------------ cabecera, días, filtros
+  function pintarCabecera() {
+    const d = ahora;
+    const doy = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    $('#fechaLarga').textContent = `${may(DS[(d.getDay() + 6) % 7])}, ${d.getDate()} de ${MS[d.getMonth()]} de ${d.getFullYear()}`;
+    $('#edicion').textContent = `Nº ${doy}`;
+    const g = new Date(D.generado);
+    const cuando = `${g.getDate()}/${g.getMonth() + 1} a las ${pad(g.getHours())}:${pad(g.getMinutes())}`;
+    $('#actualizado').textContent = `Horarios del ${cuando}`;
+    $('#colofonFecha').textContent = `Datos recogidos el ${g.getDate()} de ${MS[g.getMonth()]} de ${g.getFullYear()}, ${pad(g.getHours())}:${pad(g.getMinutes())}`;
+    const avisos = [];
+    if (caducada) {
+      avisos.push(`<p class="aviso"><b>Esta cartelera ha caducado.</b> Es del ${g.getDate()} de ${MS[g.getMonth()]} y ya no sirve para hoy. Ejecuta <code>python actualizar_cartelera.py</code> en la carpeta de la web y recarga.</p>`);
+    } else if ((ahora - g) / 864e5 > 1.5) {
+      avisos.push(`<p class="aviso"><b>Ojo:</b> los horarios son del ${g.getDate()} de ${MS[g.getMonth()]}. Para tenerlos frescos, ejecuta <code>python actualizar_cartelera.py</code>.</p>`);
+    }
+    $('#avisos').innerHTML = avisos.join('');
+  }
+
+  function pintarDias() {
+    const cuenta = DIAS.map(() => 0);
+    let total = 0;
+    for (const s of SES) if (pasa(s, { cualquierDia: true })) { cuenta[s.dia.i]++; total++; }
+    const bruto = DIAS.map((d) => SES.filter((s) => s.dia.i === d.i).length);
+    const tope = Math.max(...bruto);
+    const zonaCines = CINES.filter((c) => S.zona === 'all' || c.zona === 'bcn');
+    const html = DIAS.map((d) => {
+      const baratas = zonaCines.filter((c) => c.precio && c.precio.espectador.includes(d.dow) && !FEST.has(d.iso)).length;
+      const parcial = bruto[d.i] < tope * 0.35;
+      return `<button class="dia" data-dia="${d.i}" aria-pressed="${S.dia === d.i}"${parcial ? ' title="Muchas salas aún no han publicado los horarios de este día. Suelen hacerlo a mitad de semana."' : ''}>
+        <span class="dia__sem">${d.hoy ? '<span class="dia__hoy">Hoy</span> · ' : ''}${DC[d.dow]}</span>
+        <span class="dia__num">${d.num}</span>
+        <span class="dia__info">${cuenta[d.i].toLocaleString('es-ES')} pases${parcial ? '<br>aún incompleto' : ''}${FEST.has(d.iso) ? '<br>festivo' : ''}</span>
+        ${baratas >= 2 ? `<span class="sello">Día<br>barato · ${baratas}</span>` : ''}
+      </button>`;
+    }).join('');
+    $('#dias').innerHTML = html + `<button class="dia dia--semana" data-dia="-1" aria-pressed="${S.dia === -1}">
+        <span class="dia__sem">${DC[DIAS[0].dow]} ${DIAS[0].num} – ${DC[DIAS[DIAS.length - 1].dow]} ${DIAS[DIAS.length - 1].num}</span>
+        <span class="dia__num">Toda la semana</span>
+        <span class="dia__info">${total.toLocaleString('es-ES')} pases</span></button>`;
+  }
+
+  function chip(attr, val, txt, on, sub, dis) {
+    return `<button class="chip" type="button" data-${attr}="${esc(val)}" aria-pressed="${on}"${dis ? ' disabled' : ''}>${esc(txt)}${sub ? ` <small>${esc(sub)}</small>` : ''}</button>`;
+  }
+  function pintarFiltros() {
+    const hoyActivo = S.dia === -1 || (DIAS[S.dia] && DIAS[S.dia].hoy);
+    $('#fFranja').innerHTML = FRANJAS.map(([k, t, sub]) => chip('franja', k, t, S.franja === k, sub, k === 'ahora' && !hoyActivo)).join('');
+    $('#fVersion').innerHTML = GRUPOS.map(([k, t]) => chip('grupo', k, t, S.grupos.has(k))).join('');
+    $('#fFormato').innerHTML = FORMATOS.length ? FORMATOS.map((f) => chip('formato', f, f, S.formatos.has(f))).join('') : '<span class="etq">—</span>';
+    const nAmb = CINES.filter((c) => c.zona === 'amb').length;
+    $('#fZona').innerHTML = chip('zona', 'bcn', 'Barcelona', S.zona === 'bcn') + chip('zona', 'all', `+ ${nAmb} del área metro.`, S.zona === 'all');
+    $('#fPrecio').max = PRECIO_TOPE;
+    $('#fPrecio').value = S.precioMax ?? PRECIO_TOPE;
+    $('#fPrecioOut').textContent = S.precioMax == null ? 'Sin límite' : `${num(S.precioMax)} €`;
+    $('#fPasadas').checked = S.ocultarPasadas;
+    $('#fGeo').setAttribute('aria-pressed', S.posNombre === 'ti');
+    const n = nFiltros();
+    $('#nFiltros').hidden = !n; $('#nFiltros').textContent = n;
+  }
+
+  const ORDENES = {
+    pelis: [['pases', 'Las más programadas'], ['precio', 'La entrada más barata'], ['pronto', 'Empiezan antes'], ['critica', 'Mejor crítica'], ['estreno', 'Estrenos primero'], ['az', 'A–Z']],
+    cines: [['precio', 'Entrada más barata'], ['cerca', 'Más cerca'], ['pases', 'Más pases'], ['az', 'A–Z']],
+    sesiones: [['precio', 'Más barata primero'], ['hora', 'Por hora'], ['cerca', 'Más cerca primero']],
+    mapa: [['precio', 'La sala más barata'], ['cerca', 'Más cerca'], ['pases', 'Más pases'], ['az', 'A–Z']],
+  };
+  function pintarOrden() {
+    $('#orden').innerHTML = ORDENES[S.vista].map(([k, t]) =>
+      `<option value="${k}"${S.orden[S.vista] === k ? ' selected' : ''}${k === 'cerca' && !S.pos ? ' disabled' : ''}>${t}${k === 'cerca' && !S.pos ? ' (di dónde estás)' : ''}</option>`).join('');
+    document.querySelectorAll('.vista').forEach((b) => b.setAttribute('aria-selected', b.dataset.vista === S.vista));
+  }
+
+  function pintarSugerencias() {
+    const dia = S.dia === -1 ? null : S.dia;
+    const top = PELIS.map((p) => ({ p, n: SES.filter((s) => s.p === p && (dia == null || s.dia.i === dia) && (S.zona === 'all' || s.c.zona === 'bcn')).length }))
+      .filter((x) => x.n).sort((a, b) => b.n - a.n).slice(0, 5);
+    if (!top.length) { $('#sugerencias').innerHTML = ''; return; }
+    $('#sugerencias').innerHTML = `${dia != null && DIAS[dia].hoy ? 'Lo que más se echa hoy' : 'Lo que más se echa'}: `
+      + top.map(({ p }) => `<button data-sug="${esc(p.titulo)}">${esc(p.titulo)}</button>`).join(', ') + '.';
+  }
+
+  // ------------------------------------------------------------ mapa
+  // Plano propio (data/mapa.js): girado 45°, montaña arriba y mar abajo. Las salas
+  // van como etiquetas HTML encima del SVG para que el texto no escale con el zoom.
+  const Mapa = (() => {
+    const MP = window.MAPA;
+    if (!MP) return null;
+    const P = MP.proy, CO = Math.cos(P.giro * Math.PI / 180), SI = Math.sin(P.giro * Math.PI / 180);
+    const proy = (lat, lon) => { const x = (lon - P.lon0) * P.kx, y = (lat - P.lat0) * P.ky; return [x * CO + y * SI, x * SI - y * CO]; };
+    const desproy = (X, Y) => { const x = X * CO + Y * SI, y = X * SI - Y * CO; return [y / P.ky + P.lat0, x / P.kx + P.lon0]; };
+    const [bx0, by0, bx1, by1] = MP.limites;
+    const B = { x0: bx0 - 50, y0: by0 - 50, x1: bx1 + 50, y1: by1 + 50 };
+    const KMAX = 9;
+    const R15 = (15 / 60) * (4.8 / 1.3) * 100; // 15 min a pie, con la misma cuenta que distTxt (1 unidad = 10 m)
+    const POS = ['ne', 'nw', 'se', 'sw', 'e', 'w'];
+    for (const c of CINES) [c.mx, c.my] = proy(c.lat, c.lon);
+    const enMarco = (c) => c.mx >= B.x0 && c.mx <= B.x1 && c.my >= B.y0 && c.my <= B.y1;
+    const reducido = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let raiz, lienzo, svg, capaPines, capaBordes, tuEl, escala, aviso, panel, tarjeta;
+    let W = 0, H = 0, s0 = 1, k = 1, cx = (B.x0 + B.x1) / 2, cy = (B.y0 + B.y1) / 2;
+    let primeraVez = true;
+    let F = [], stats = new Map(), tam = new Map(), fijos = [], hoverI = null, eligiendo = false;
+    let ultimoQ = '', ultimaPos = null, anim = 0, cuadro = 0, avisoT = 0;
+
+    const aUnidad = (px, py) => [(px - W / 2) / (s0 * k) + cx, (py - H / 2) / (s0 * k) + cy];
+    const aPantalla = (x, y) => [(x - cx) * s0 * k + W / 2, (y - cy) * s0 * k + H / 2];
+    const solapa = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
+    const zonaOk = (c) => S.zona === 'all' || c.zona === 'bcn';
+
+    function construir() {
+      raiz = $('#mapaVista');
+      const lejos = 6000;
+      const mar = `x="${B.x0 - lejos}" y="${B.y0 - lejos}" width="${B.x1 - B.x0 + 2 * lejos}" height="${B.y1 - B.y0 + 2 * lejos}"`;
+      raiz.innerHTML = `<div class="mapa">
+        <div class="mapa__lienzo" id="mLienzo" tabindex="0" role="application" aria-roledescription="mapa"
+             aria-label="Mapa de los cines. Arrastra para moverte, Control más rueda o los botones para acercarte; con el teclado, flechas, más y menos.">
+          <svg id="mSvg" aria-hidden="true">
+            <defs>
+              <pattern id="mPatMar" width="6" height="6" patternUnits="userSpaceOnUse"><path class="m-mar-l" d="M0 3H6"/></pattern>
+              <pattern id="mPatVerde" width="6" height="6" patternUnits="userSpaceOnUse"><circle class="m-verde-p" cx="1.5" cy="1.5" r=".8"/><circle class="m-verde-p" cx="4.5" cy="4.5" r=".8"/></pattern>
+              ${MP.avenidas.map((a, i) => `<path id="mAv${i}" d="${a.d}"/>`).join('')}
+            </defs>
+            <rect class="m-mar" ${mar}/><rect ${mar} fill="url(#mPatMar)"/>
+            ${MP.municipios.map((m) => `<path class="m-muni" d="${m.d}"/>`).join('')}
+            <path class="m-bcn" d="${MP.barcelona}"/>
+            <path class="m-verde-fondo" d="${MP.verde}"/><path d="${MP.verde}" fill="url(#mPatVerde)"/>
+            ${MP.distritos.map((d) => `<path class="m-dist" d="${d.d}"/>`).join('')}
+            <path class="m-sec" d="${MP.secundarias}"/>
+            <path class="m-pri" d="${MP.principales}"/>
+            ${MP.rios.map((r) => `<path class="m-rio" d="${r.d}" data-rio="${esc(r.n)}"/>`).join('')}
+            <g id="mAnillos"></g>
+            <g class="m-rot">
+              ${MP.municipios.filter((m) => m.l).map((m) => `<text class="m-rot-muni" x="${m.l[0]}" y="${m.l[1]}">${esc(m.n)}</text>`).join('')}
+              ${MP.distritos.filter((d) => d.l).map((d) => `<text class="m-rot-dist" x="${d.l[0]}" y="${d.l[1]}">${esc(d.n)}</text>`).join('')}
+              ${MP.avenidas.map((a, i) => `<text class="m-rot-av" dy="-.45em"><textPath href="#mAv${i}" startOffset="50%" text-anchor="middle">${esc(a.n)}</textPath></text>`).join('')}
+              <text class="m-rot-mar" x="330" y="600">Mar Mediterrània</text>
+              <g id="mRios"></g>
+            </g>
+          </svg>
+          <div class="m-capa" id="mPines"></div>
+          <div class="m-capa" id="mBordes"></div>
+          <div class="m-tu" id="mTu" hidden><i></i><span></span></div>
+          <div class="m-orienta" aria-hidden="true"><span class="o-n">↑ Muntanya</span><span class="o-s">Mar ↓</span><span class="o-e">Besòs →</span><span class="o-w">← Llobregat</span></div>
+          <div class="m-ctrl" role="toolbar" aria-label="Controles del mapa">
+            <button type="button" data-mctrl="mas" title="Acercar" aria-label="Acercar">+</button>
+            <button type="button" data-mctrl="menos" title="Alejar" aria-label="Alejar">−</button>
+            <button type="button" data-mctrl="ciudad" title="Toda Barcelona" aria-label="Ver toda Barcelona"><svg viewBox="0 0 16 16"><path d="M2.5 13.5h11M4 13.5V7l4-3.5L12 7v6.5M6.5 13.5v-3.5h3v3.5"/></svg></button>
+            <button type="button" data-mctrl="ajustar" title="Encuadrar las salas que salen" aria-label="Encuadrar las salas que salen"><svg viewBox="0 0 16 16"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
+            <button type="button" data-mctrl="aqui" title="Marcar en el mapa desde dónde sales" aria-label="Marcar en el mapa desde dónde sales" aria-pressed="false"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4.2"/><circle cx="8" cy="8" r="1" fill="currentColor"/><path d="M8 1v2.6M8 12.4V15M1 8h2.6M12.4 8H15"/></svg></button>
+          </div>
+          <div class="m-escala" id="mEscala"><i></i><span></span></div>
+          <div class="m-cred">${esc(MP.fuente)}</div>
+          <div class="m-card" id="mCard" hidden></div>
+          <div class="m-aviso" id="mAviso" role="status" aria-live="polite"></div>
+        </div>
+        <div class="mapa__panel" id="mPanel"></div>
+      </div>`;
+      lienzo = $('#mLienzo'); svg = $('#mSvg'); capaPines = $('#mPines'); capaBordes = $('#mBordes');
+      tuEl = $('#mTu'); escala = $('#mEscala'); aviso = $('#mAviso'); panel = $('#mPanel'); tarjeta = $('#mCard');
+
+      // arrastrar y pellizcar
+      const puntos = new Map();
+      let gesto = null;
+      lienzo.addEventListener('pointerdown', (e) => {
+        if (e.button > 0 || e.target.closest('.pin,.borde,.m-ctrl,.m-card')) return;
+        try { lienzo.setPointerCapture(e.pointerId); } catch (err) { /* puntero sintético */ }
+        puntos.set(e.pointerId, [e.clientX, e.clientY]);
+        cancelAnimationFrame(anim);
+        if (!gesto) gesto = { x: e.clientX, y: e.clientY, movido: false };
+        if (puntos.size > 1) gesto.movido = true;
+        lienzo.classList.add('arrastrando');
+      });
+      lienzo.addEventListener('pointermove', (e) => {
+        if (!puntos.has(e.pointerId)) return;
+        const antes = [...puntos.values()];
+        puntos.set(e.pointerId, [e.clientX, e.clientY]);
+        const ahora = [...puntos.values()];
+        if (Math.hypot(e.clientX - gesto.x, e.clientY - gesto.y) > 4) gesto.movido = true;
+        const s = s0 * k;
+        if (ahora.length === 1) {
+          cx -= (ahora[0][0] - antes[0][0]) / s; cy -= (ahora[0][1] - antes[0][1]) / s;
+        } else {
+          const r = lienzo.getBoundingClientRect();
+          const [a0, b0] = antes, [a1, b1] = ahora;
+          const d0 = Math.hypot(a0[0] - b0[0], a0[1] - b0[1]), d1 = Math.hypot(a1[0] - b1[0], a1[1] - b1[1]);
+          const m0 = [(a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2], m1 = [(a1[0] + b1[0]) / 2, (a1[1] + b1[1]) / 2];
+          cx -= (m1[0] - m0[0]) / s; cy -= (m1[1] - m0[1]) / s;
+          if (d0 > 0) zoomEn(d1 / d0, m1[0] - r.left, m1[1] - r.top, false);
+        }
+        limitar(); programar();
+      });
+      const soltar = (e) => {
+        if (!puntos.has(e.pointerId)) return;
+        puntos.delete(e.pointerId);
+        if (puntos.size) return;
+        lienzo.classList.remove('arrastrando');
+        if (gesto && !gesto.movido && e.type === 'pointerup') clicMapa(e);
+        gesto = null;
+      };
+      lienzo.addEventListener('pointerup', soltar);
+      lienzo.addEventListener('pointercancel', soltar);
+      lienzo.addEventListener('wheel', (e) => {
+        if (!(e.ctrlKey || e.metaKey)) { avisar('Para acercarte: Ctrl + rueda (⌘ en Mac), doble clic o los botones + y −'); return; }
+        e.preventDefault();
+        cancelAnimationFrame(anim);
+        const r = lienzo.getBoundingClientRect();
+        zoomEn(Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0025)), e.clientX - r.left, e.clientY - r.top);
+      }, { passive: false });
+      lienzo.addEventListener('dblclick', (e) => {
+        if (e.target.closest('.pin,.borde,.m-ctrl,.m-card')) return;
+        const r = lienzo.getBoundingClientRect();
+        volarZoom(e.shiftKey ? 0.5 : 2, e.clientX - r.left, e.clientY - r.top);
+      });
+      lienzo.addEventListener('keydown', (e) => {
+        if (e.target !== lienzo) return;
+        const paso = 90 / (s0 * k);
+        const mov = { ArrowLeft: [-paso, 0], ArrowRight: [paso, 0], ArrowUp: [0, -paso], ArrowDown: [0, paso] }[e.key];
+        if (mov) { e.preventDefault(); cx += mov[0]; cy += mov[1]; limitar(); programar(); }
+        else if (e.key === '+' || e.key === '=') { e.preventDefault(); volarZoom(1.6); }
+        else if (e.key === '-' || e.key === '_') { e.preventDefault(); volarZoom(1 / 1.6); }
+        else if (e.key === '0') volar((B.x0 + B.x1) / 2, (B.y0 + B.y1) / 2, 1);
+        else if (e.key === 'Escape' && eligiendo) ponerEligiendo(false);
+      });
+      // la lista y los pines se señalan entre sí
+      panel.addEventListener('mouseover', (e) => { const f = e.target.closest('.mp-fila'); ponerHover(f ? +f.dataset.mc : null); });
+      panel.addEventListener('mouseleave', () => ponerHover(null));
+      capaPines.addEventListener('mouseover', (e) => { const p = e.target.closest('.pin'); marcarFila(p ? +p.dataset.mc : null); });
+      capaPines.addEventListener('mouseleave', () => marcarFila(null));
+      new ResizeObserver(() => { medir(); dibujar(); }).observe(lienzo);
+      if (document.fonts) document.fonts.ready.then(() => { medirEtiquetas(); programar(); });
+      medir();
+      rotularRios();
+    }
+
+    function medir() {
+      const r = lienzo.getBoundingClientRect();
+      W = r.width; H = r.height;
+      if (!W || !H) return;
+      s0 = Math.min(W / (B.x1 - B.x0), H / (B.y1 - B.y0));
+      fijos = [...lienzo.querySelectorAll('.m-ctrl, .m-orienta span, .m-escala, .m-cred')].map((el) => {
+        const b = el.getBoundingClientRect();
+        return [b.left - r.left - 4, b.top - r.top - 4, b.right - r.left + 4, b.bottom - r.top + 4];
+      });
+      limitar();
+    }
+    function medirEtiquetas() {
+      tam.clear();
+      for (const el of capaPines.children) {
+        el.classList.remove('pin--mini'); // medir siempre la etiqueta entera
+        const t = el.querySelector('.pin__tag');
+        tam.set(el.dataset.mc, [t.offsetWidth + 3, t.offsetHeight + 3, t.lastElementChild.offsetWidth + 19]);
+      }
+    }
+    function limitar() {
+      k = Math.min(KMAX, Math.max(1, k));
+      const s = s0 * k, vw = W / s, vh = H / s;
+      cx = vw >= B.x1 - B.x0 ? (B.x0 + B.x1) / 2 : Math.min(B.x1 - vw / 2, Math.max(B.x0 + vw / 2, cx));
+      cy = vh >= B.y1 - B.y0 ? (B.y0 + B.y1) / 2 : Math.min(B.y1 - vh / 2, Math.max(B.y0 + vh / 2, cy));
+    }
+    function zoomEn(f, px = W / 2, py = H / 2, ya = true) {
+      const [ux, uy] = aUnidad(px, py);
+      k = Math.min(KMAX, Math.max(1, k * f));
+      const s = s0 * k;
+      cx = ux - (px - W / 2) / s; cy = uy - (py - H / 2) / s;
+      limitar();
+      if (ya) programar();
+    }
+    function volar(tx, ty, tk, ms = 480) {
+      cancelAnimationFrame(anim);
+      const ini = [cx, cy, k];
+      [cx, cy, k] = [tx, ty, tk]; limitar();
+      const fin = [cx, cy, k];
+      [cx, cy, k] = ini;
+      const t0 = performance.now(), dur = reducido() ? 0 : ms;
+      const paso = (t) => {
+        const p = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - (1 - p) ** 3;
+        k = ini[2] * (fin[2] / ini[2]) ** e;
+        cx = ini[0] + (fin[0] - ini[0]) * e; cy = ini[1] + (fin[1] - ini[1]) * e;
+        dibujar();
+        if (p < 1) anim = requestAnimationFrame(paso);
+      };
+      anim = requestAnimationFrame(paso);
+    }
+    function volarZoom(f, px = W / 2, py = H / 2) {
+      const [ux, uy] = aUnidad(px, py);
+      const tk = Math.min(KMAX, Math.max(1, k * f)), s = s0 * tk;
+      volar(ux - (px - W / 2) / s, uy - (py - H / 2) / s, tk, 320);
+    }
+    function programar() {
+      if (cuadro) return;
+      cuadro = requestAnimationFrame(() => { cuadro = 0; dibujar(); });
+    }
+
+    function dibujar() {
+      if (!W || !raiz) return;
+      const s = s0 * k, vw = W / s, vh = H / s, u = 1 / s;
+      svg.setAttribute('viewBox', `${cx - vw / 2} ${cy - vh / 2} ${vw} ${vh}`);
+      svg.style.setProperty('--u', u);
+      svg.dataset.z = k < 1.7 ? 1 : k < 3.4 ? 2 : 3;
+      for (const id of ['mPatMar', 'mPatVerde']) document.getElementById(id).setAttribute('patternTransform', `scale(${u})`);
+      const m = [100, 200, 250, 500, 1000, 2000, 3000, 5000].filter((x) => (x / 10) * s <= 110).pop() || 100;
+      escala.firstElementChild.style.width = `${(m / 10) * s}px`;
+      escala.lastElementChild.textContent = m < 1000 ? `${m} m` : `${m / 1000} km`;
+      colocarPines();
+      colocarTu();
+    }
+
+    function colocarPines() {
+      const ocupado = fijos.slice();
+      const els = [...capaPines.children];
+      const prioridad = (el) => {
+        const i = +el.dataset.mc, st = stats.get(CINES[i]);
+        if (i === S.mapaSel) return -2e6;
+        if (i === hoverI) return -1e6;
+        return st ? (st.min ?? 60) * 1000 - st.n : 1e6;
+      };
+      els.sort((a, b) => prioridad(a) - prioridad(b));
+      const fuera = [];
+      if (S.pos && !tuEl.hidden) {
+        const [tx, ty] = aPantalla(...proy(S.pos.lat, S.pos.lon));
+        const largo = tuEl.querySelector('span').textContent.length * 7 + 22;
+        ocupado.push([tx - 9, ty - 11, tx + 12 + largo, ty + 11]);
+      }
+      els.forEach((el, n) => {
+        const c = CINES[+el.dataset.mc];
+        const [x, y] = aPantalla(c.mx, c.my);
+        el._x = x; el._y = y;
+        el.hidden = x < -6 || y < -6 || x > W + 6 || y > H + 6;
+        if (el.hidden) { if (stats.has(c)) fuera.push([c, x, y]); return; }
+        el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+        el.style.zIndex = 26 - n;
+        ocupado.push([x - 6, y - 6, x + 6, y + 6]);
+      });
+      // salas que quedan fuera del encuadre: un aviso en el borde, apuntando hacia ellas.
+      // Van antes que las etiquetas para que éstas los esquiven.
+      const html = [];
+      for (const [c, x, y] of fuera) {
+        const ang = Math.atan2(y - H / 2, x - W / 2), dx = Math.cos(ang), dy = Math.sin(ang);
+        const t = Math.min(Math.abs((W / 2 - 34) / (dx || 1e-6)), Math.abs((H / 2 - 30) / (dy || 1e-6)));
+        const st = stats.get(c), txt = `${c.corto} · ${c.km != null ? distTxt(c) : eur(st.min)}`;
+        const w = txt.length * 6.6 + 34, h = 22;
+        const bx = Math.min(W - w / 2 - 8, Math.max(w / 2 + 8, W / 2 + dx * t));
+        const by = Math.min(H - h / 2 - 8, Math.max(h / 2 + 8, H / 2 + dy * t));
+        const caja = [bx - w / 2, by - h / 2, bx + w / 2, by + h / 2];
+        if (ocupado.some((o) => solapa(o, caja))) continue;
+        ocupado.push(caja);
+        html.push(`<button class="borde" data-mc="${c.i}" style="transform:translate(${(bx - w / 2).toFixed(0)}px,${(by - h / 2).toFixed(0)}px)" title="${esc(c.nombre)}${enMarco(c) ? '' : ' · fuera del plano de Barcelona'}"><i style="transform:rotate(${(ang * 180 / Math.PI).toFixed(0)}deg)">→</i>${esc(txt)}</button>`);
+      }
+      capaBordes.innerHTML = html.join('');
+      for (const el of els) {
+        if (el.hidden) continue;
+        const i = +el.dataset.mc, x = el._x, y = el._y;
+        const [wn, h, wm] = tam.get(el.dataset.mc) || [90, 26, 50];
+        if (!stats.has(CINES[i]) && i !== S.mapaSel && i !== hoverI) { el.dataset.pos = 'no'; continue; }
+        let elegido = 'no', mini = false;
+        // primero la etiqueta entera; si no cabe en ningún lado, sólo el precio
+        for (const [p, w, m] of [...POS.map((q) => [q, wn, false]), ...POS.map((q) => [q, wm, true])]) {
+          const caja = p === 'ne' ? [x + 7, y - 7 - h, x + 7 + w, y - 7]
+            : p === 'nw' ? [x - 7 - w, y - 7 - h, x - 7, y - 7]
+            : p === 'se' ? [x + 7, y + 7, x + 7 + w, y + 7 + h]
+            : p === 'sw' ? [x - 7 - w, y + 7, x - 7, y + 7 + h]
+            : p === 'e' ? [x + 11, y - h / 2, x + 11 + w, y + h / 2]
+            : [x - 11 - w, y - h / 2, x - 11, y + h / 2];
+          if (caja[0] < 4 || caja[1] < 4 || caja[2] > W - 4 || caja[3] > H - 4) continue;
+          if (ocupado.some((o) => solapa(o, caja))) continue;
+          ocupado.push(caja); elegido = p; mini = m; break;
+        }
+        if (elegido === 'no' && (i === S.mapaSel || i === hoverI)) { elegido = x > W / 2 ? 'nw' : 'ne'; mini = false; }
+        el.dataset.pos = elegido;
+        el.classList.toggle('pin--mini', mini);
+      }
+    }
+
+    function colocarTu() {
+      if (!S.pos) { tuEl.hidden = true; return; }
+      const [X, Y] = proy(S.pos.lat, S.pos.lon), [x, y] = aPantalla(X, Y);
+      tuEl.hidden = x < 0 || y < 0 || x > W || y > H;
+      tuEl.style.transform = `translate(${x}px,${y}px)`;
+    }
+    function anillos() {
+      const g = $('#mAnillos');
+      if (!S.pos) { g.innerHTML = ''; return; }
+      const [X, Y] = proy(S.pos.lat, S.pos.lon);
+      g.innerHTML = `<circle class="m-anillo" cx="${X}" cy="${Y}" r="${R15 * 2}"/><circle class="m-anillo" cx="${X}" cy="${Y}" r="${R15}"/>
+        <text class="m-anillo-t" x="${X}" y="${Y - R15}" dy="-.5em">15 min a pie</text>
+        <text class="m-anillo-t" x="${X}" y="${Y - R15 * 2}" dy="-.5em">30 min</text>`;
+      tuEl.querySelector('span').textContent = S.posNombre === 'ti' ? 'Estás aquí' : S.posNombre === 'el punto marcado' ? 'Sales de aquí' : S.posNombre;
+    }
+    function rotularRios() {
+      let html = '';
+      svg.querySelectorAll('.m-rio').forEach((p) => {
+        const L = p.getTotalLength(), N = 240, dentro = [];
+        for (let i = 1; i < N; i++) {
+          const q = p.getPointAtLength((L * i) / N);
+          if (q.x > B.x0 + 80 && q.x < B.x1 - 80 && q.y > B.y0 + 80 && q.y < B.y1 - 80) dentro.push(i);
+        }
+        if (!dentro.length) return;
+        const i = dentro[Math.floor(dentro.length * 0.45)];
+        const a = p.getPointAtLength((L * (i - 1)) / N), b = p.getPointAtLength((L * (i + 1)) / N), m = p.getPointAtLength((L * i) / N);
+        let ang = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+        if (ang > 90) ang -= 180;
+        if (ang < -90) ang += 180;
+        html += `<text class="m-rot-rio" transform="translate(${m.x.toFixed(0)} ${m.y.toFixed(0)}) rotate(${ang.toFixed(0)})" dy="-.6em">${esc(p.dataset.rio)}</text>`;
+      });
+      $('#mRios').innerHTML = html;
+    }
+
+    function avisar(txt, ms = 1700) {
+      aviso.textContent = txt; aviso.classList.add('ver');
+      clearTimeout(avisoT); avisoT = setTimeout(() => aviso.classList.remove('ver'), ms);
+    }
+    function ponerEligiendo(v) {
+      eligiendo = v;
+      lienzo.classList.toggle('eligiendo', v);
+      lienzo.querySelector('[data-mctrl="aqui"]').setAttribute('aria-pressed', v);
+      if (v) avisar('Toca el mapa en el sitio desde el que sales', 2600);
+    }
+    function clicMapa(e) {
+      const r = lienzo.getBoundingClientRect();
+      if (eligiendo) {
+        const [lat, lon] = desproy(...aUnidad(e.clientX - r.left, e.clientY - r.top));
+        ponerEligiendo(false);
+        aviso.classList.remove('ver');
+        $('#fCerca').value = '';
+        ponerPosicion(lat, lon, 'el punto marcado');
+        return;
+      }
+      if (S.mapaSel != null) { S.mapaSel = null; marcarPines(); pintarPanel(); programar(); }
+    }
+    function ponerHover(i) {
+      if (hoverI === i) return;
+      hoverI = i;
+      for (const el of capaPines.children) el.classList.toggle('pin--hover', +el.dataset.mc === i);
+      programar();
+    }
+    function marcarFila(i) {
+      panel.querySelectorAll('.mp-fila').forEach((f) => f.classList.toggle('activa', +f.dataset.mc === i));
+    }
+    function marcarPines() {
+      for (const el of capaPines.children) el.classList.toggle('pin--sel', +el.dataset.mc === S.mapaSel);
+    }
+
+    function ajustar() {
+      const cs = [...stats.keys()].filter((c) => enMarco(c) && zonaOk(c));
+      if (!cs.length) { volar((B.x0 + B.x1) / 2, (B.y0 + B.y1) / 2, 1); return; }
+      const xs = cs.map((c) => c.mx), ys = cs.map((c) => c.my);
+      const bw = Math.max(120, Math.max(...xs) - Math.min(...xs)), bh = Math.max(120, Math.max(...ys) - Math.min(...ys));
+      const tk = Math.min(5, (W - 220) / (bw * s0), (H - 170) / (bh * s0));
+      volar((Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2, Math.max(1, tk));
+    }
+
+    function pintarPanel() {
+      const sel = S.mapaSel != null ? CINES[S.mapaSel] : null;
+      tarjeta.hidden = !sel;
+      if (sel) {
+        panel.innerHTML = fichaSala(sel);
+        const st = stats.get(sel);
+        tarjeta.innerHTML = `<div><b>${esc(sel.nombre)}</b><span>${st ? `${st.n} pases · desde ${eur(st.min)}` : 'Sin pases con tus filtros'}</span></div>
+          <button class="btn btn--lleno" type="button" data-mbajar>Ver pases ↓</button>`;
+        return;
+      }
+      const vis = CINES.filter(zonaOk);
+      const con = vis.filter((c) => stats.has(c)), sin = vis.filter((c) => !stats.has(c));
+      const o = S.orden.mapa;
+      con.sort((a, b) => {
+        const A = stats.get(a), Bs = stats.get(b);
+        return o === 'cerca' && S.pos ? a.km - b.km
+          : o === 'pases' ? Bs.n - A.n
+          : o === 'az' ? a.nombre.localeCompare(b.nombre, 'es')
+          : (A.min ?? 99) - (Bs.min ?? 99) || Bs.n - A.n;
+      });
+      const mins = con.map((c) => stats.get(c).min).filter((v) => v != null);
+      const minG = mins.length ? Math.min(...mins) : null;
+      const pelis = new Set(F.map((s) => s.p));
+      const titulo = S.q && pelis.size === 1 ? `Dónde ver «${esc([...pelis][0].titulo)}»`
+        : S.q ? `«${esc(S.q)}» en el mapa` : `Las salas, ${cuandoTxt()}`;
+      panel.innerHTML = `<span class="etq">El plano · ${S.pos ? `desde ${esc(S.posNombre === 'ti' ? 'tu ubicación' : S.posNombre)}` : 'pulsa una sala'}</span>
+        <h3 class="mp-tit">${titulo}</h3>
+        <p class="mp-sub">${con.length} ${con.length === 1 ? 'sala con pases' : 'salas con pases'}${sin.length ? ` · ${sin.length} sin pases con estos filtros` : ''}</p>
+        ${con.length ? `<ol class="mp-lista">${con.map((c) => {
+          const st = stats.get(c);
+          const extra = [c.barrio, `${st.n} ${st.n === 1 ? 'pase' : 'pases'}`, st.prox ? `próxima ${st.prox.dia.hoy || S.dia !== -1 ? '' : `${DC[st.prox.dia.dow]} `}${st.prox.h}` : '', distTxt(c), enMarco(c) ? '' : 'fuera del plano'].filter(Boolean);
+          return `<li><button class="mp-fila${st.min != null && st.min === minG ? ' barata' : ''}" data-mc="${c.i}">
+            <b>${esc(c.nombre)}</b><strong>${eur(st.min)}</strong><small>${extra.map(esc).join(' · ')}</small></button></li>`;
+        }).join('')}</ol>` : '<p class="cine__nota">Ninguna sala tiene pases con estos filtros. Prueba otro día u otra franja.</p>'}
+        ${sin.length ? `<details class="mp-sin"><summary>Sin pases con estos filtros (${sin.length})</summary><ul>${sin.map((c) => `<li><button data-mc="${c.i}">${esc(c.nombre)}</button></li>`).join('')}</ul></details>` : ''}
+        <div class="mp-leyenda">
+          <div><i class="y"></i>La entrada más barata con tus filtros</div>
+          <div><i></i>Precio más bajo de esa sala</div>
+          <div><i class="r"></i>La sala que estás mirando</div>
+          <div><i class="v"></i>Sin pases con estos filtros</div>
+        </div>`;
+    }
+    function fichaSala(c) {
+      const st = stats.get(c), t = tarifaHoy(c);
+      const ses = F.filter((s) => s.c === c).sort(porHora);
+      const pelis = [...agrupar(ses, (s) => s.p).entries()];
+      const ruta = `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}`;
+      return `<button class="mp-volver" type="button" data-mvolver>← Todas las salas</button>
+        <span class="cine__cadena" style="margin-top:16px">${esc(c.cadena)}${c.zona === 'amb' ? ' · Área metropolitana' : ''}</span>
+        <h3 class="mp-tit">${esc(c.nombre)}</h3>
+        <p class="cine__dir">${esc(c.dir)} · ${esc(c.barrio)}<br>${esc(c.transporte)}${c.km != null ? ` · ${distTxt(c)}` : ''}</p>
+        <div class="mp-tarifa"><b>${eur(t.v)}</b><span>${esc(t.motivo)}${t.v != null && !t.fiable ? ' · aprox.' : ''}<br>entrada general ${cuandoTxt() === 'esta semana' ? 'hoy' : cuandoTxt()}</span></div>
+        ${c.precio && c.precio.nota ? `<p class="cine__nota">${esc(c.precio.nota)}</p>` : ''}
+        <div class="enlaces"><a href="${ruta}" target="_blank" rel="noopener">Cómo llegar ↗</a>${c.web ? `<a href="${esc(c.web)}" target="_blank" rel="noopener">Web de la sala ↗</a>` : ''}</div>
+        <h4 class="mp-h4">Lo que echan <small>${st ? `${st.n} pases con tus filtros` : 'nada con tus filtros'}</small></h4>
+        <ul class="mp-pelis">${pelis.map(([p, l]) => `<li><button data-ficha="${p.i}">${esc(p.titulo)}</button>
+          <div class="horas">${l.map((s) => hora(s, st && s.pr.v === st.min && ses.length > 1, S.dia === -1)).join('')}</div></li>`).join('')
+          || '<li class="mp-sub">Con estos filtros no hay nada aquí. Prueba otro día o quita el límite de precio.</li>'}</ul>`;
+    }
+
+    function actualizar(lista) {
+      if (!raiz) construir();
+      F = lista;
+      stats = new Map();
+      for (const s of F) {
+        let st = stats.get(s.c);
+        if (!st) { st = { n: 0, min: null, prox: null }; stats.set(s.c, st); }
+        st.n++;
+        if (s.pr.v != null && (st.min == null || s.pr.v < st.min)) st.min = s.pr.v;
+        if (!s.pasada && (!st.prox || porHora(s, st.prox) < 0)) st.prox = s;
+      }
+      if (S.mapaSel != null && !zonaOk(CINES[S.mapaSel])) S.mapaSel = null;
+      const mins = [...stats.entries()].filter(([c]) => zonaOk(c)).map(([, st]) => st.min).filter((v) => v != null);
+      const minG = mins.length ? Math.min(...mins) : null;
+      capaPines.innerHTML = CINES.filter(zonaOk).map((c) => {
+        const st = stats.get(c);
+        const cls = !st ? ' pin--vacio' : st.min != null && st.min === minG ? ' pin--barata' : '';
+        const etiqueta = st ? `${c.nombre}: ${st.n} pases, desde ${eur(st.min)}` : `${c.nombre}: sin pases con estos filtros`;
+        return `<button class="pin${cls}${c.i === S.mapaSel ? ' pin--sel' : ''}" type="button" data-mc="${c.i}" data-pos="no" aria-label="${esc(etiqueta)}" title="${esc(etiqueta)}">
+          <span class="pin__punto"></span><span class="pin__tag"><b>${esc(c.corto)}</b><span>${!st ? 'sin pases' : st.min == null ? 'sin precio' : eur(st.min)}</span></span></button>`;
+      }).join('');
+      medir();
+      if (primeraVez) {
+        primeraVez = false;
+        // en pantallas estrechas la ciudad entera queda diminuta: se abre sobre el centro
+        if (W < 640) { [cx, cy] = proy(41.393, 2.163); k = 1.8; limitar(); }
+      }
+      medirEtiquetas();
+      anillos();
+      pintarPanel();
+      if (S.q !== ultimoQ) { ultimoQ = S.q; if (S.q && stats.size) ajustar(); }
+      if (S.pos !== ultimaPos) {
+        ultimaPos = S.pos;
+        if (S.pos) {
+          const [X, Y] = proy(S.pos.lat, S.pos.lon);
+          if (X > B.x0 && X < B.x1 && Y > B.y0 && Y < B.y1) volar(X, Y, Math.max(k, 2.2));
+        }
+      }
+      dibujar();
+    }
+
+    function seleccionar(i, opc = {}) {
+      S.mapaSel = i;
+      marcarPines(); pintarPanel();
+      panel.scrollTop = 0;
+      const c = CINES[i];
+      if (opc.volar && enMarco(c)) {
+        const [x, y] = aPantalla(c.mx, c.my);
+        const dentro = x > 60 && y > 60 && x < W - 60 && y < H - 60;
+        if (!dentro || k < 2.2) volar(c.mx, c.my, Math.max(k, 2.6)); else programar();
+      } else programar();
+    }
+    function control(nombre) {
+      if (nombre === 'mas') volarZoom(1.6);
+      else if (nombre === 'menos') volarZoom(1 / 1.6);
+      else if (nombre === 'ciudad') volar((B.x0 + B.x1) / 2, (B.y0 + B.y1) / 2, 1);
+      else if (nombre === 'ajustar') ajustar();
+      else if (nombre === 'aqui') ponerEligiendo(!eligiendo);
+    }
+    return { actualizar, seleccionar, control, panel: () => panel };
+  })();
+
+  // ------------------------------------------------------------ pintar todo
+  function cuandoTxt() {
+    return S.dia === -1 ? 'esta semana' : DIAS[S.dia].hoy ? 'hoy' : `el ${DS[DIAS[S.dia].dow]} ${DIAS[S.dia].num}`;
+  }
+  function pintar() {
+    const F = filtrados();
+    pintarDias(); pintarFiltros(); pintarOrden(); pintarSugerencias(); pintarMejor(F); pintarTarifas();
+    const nP = new Set(F.map((s) => s.p)).size, nC = new Set(F.map((s) => s.c)).size;
+    const cuando = cuandoTxt();
+    $('#recuento').innerHTML = F.length
+      ? `<b>${F.length.toLocaleString('es-ES')}</b> pases ${cuando} · <b>${nP}</b> ${nP === 1 ? 'película' : 'películas'} en <b>${nC}</b> ${nC === 1 ? 'sala' : 'salas'}${S.q ? ` · buscando «${esc(S.q)}»` : ''}${S.pos ? ` · distancias desde ${esc(S.posNombre === 'ti' ? 'tu ubicación' : S.posNombre)}` : ''}`
+      : '';
+    const enMapa = S.vista === 'mapa' && !!Mapa;
+    $('.cuerpo').classList.toggle('cuerpo--mapa', enMapa);
+    $('#lista').hidden = enMapa;
+    $('#mapaVista').hidden = !enMapa;
+    if (enMapa) { $('#lista').innerHTML = ''; Mapa.actualizar(F); return; }
+    $('#lista').innerHTML = !F.length ? vacio()
+      : S.vista === 'cines' ? vistaCines(F)
+      : S.vista === 'sesiones' ? vistaSesiones(F)
+      : vistaPelis(F);
+  }
+
+  // ------------------------------------------------------------ entrada (diálogo)
+  function abrirEntrada(id) {
+    const s = SES[id]; if (!s) return;
+    const p = s.p, c = s.c, dlg = $('#dlgEntrada');
+    const fin = p.duracion ? deMin(s.min + p.duracion + 12) : null;
+    const mapa = `https://www.google.com/maps/dir/?api=1&destination=${c.lat},${c.lon}`;
+    const fecha = `${may(DS[s.dia.dow])} ${s.dia.num} de ${MS[s.dia.mes]}`;
+    const compra = s.url
+      ? `<a class="btn btn--lleno" href="${esc(s.url)}" target="_blank" rel="noopener">Comprar entradas →</a>`
+      : `<a class="btn btn--lleno" href="${esc(c.web || mapa)}" target="_blank" rel="noopener">${c.id === 'malda' ? 'Sólo en taquilla · ver web' : 'Web de la sala →'}</a>`;
+    dlg.innerHTML = `<div class="entrada">
+      <button class="cerrar" data-cerrar aria-label="Cerrar">×</button>
+      <div class="entrada__cab">
+        <div>
+          <span class="etq">${esc(c.nombre)}</span>
+          <h2 class="entrada__tit" id="entradaTit">${esc(p.titulo)}</h2>
+        </div>
+        ${poster(p)}
+      </div>
+      <dl class="entrada__datos">
+        <div><dt>Día</dt><dd>${fecha}${s.dia.hoy ? ' · hoy' : ''}</dd></div>
+        <div><dt>Hora</dt><dd>${s.h}${fin ? ` <span class="mono" style="font-size:12px;color:var(--muted)">· sales sobre las ${fin}</span>` : ''}</dd></div>
+        <div><dt>Versión</dt><dd>${esc(ver(s.v).l)}</dd></div>
+        <div><dt>${s.fx.length ? 'Formato' : 'Duración'}</dt><dd>${s.fx.length ? esc(s.fx.join(', ')) : esc(durTxt(p.duracion) || '—')}</dd></div>
+        <div class="ancho"><dt>Dónde</dt><dd>${esc(c.dir)}, ${esc(c.barrio)} · ${esc(c.transporte)}${c.km != null ? ` · ${distTxt(c)}` : ''}</dd></div>
+        ${s.nota ? `<div class="ancho"><dt>Ojo</dt><dd>${esc(s.nota)}</dd></div>` : ''}
+      </dl>
+      <div class="entrada__precio">
+        <b>${eur(s.pr.v)}</b>
+        <p>${esc(s.pr.motivo)}${s.pr.extras.length ? `<br>incluye ${esc(s.pr.extras.join(', '))}` : ''}${s.pr.v != null && !s.pr.fiable && s.pr.v > 0 ? '<br>precio aproximado: la sala no lo confirma' : ''}${c.precio && c.precio.nota ? `<br><span style="color:var(--muted)">${esc(c.precio.nota)}</span>` : ''}</p>
+      </div>
+      <div class="entrada__acc">
+        ${compra}
+        <a class="btn" href="${mapa}" target="_blank" rel="noopener">Cómo llegar</a>
+        <button class="btn" data-ics="${s.id}">Al calendario</button>
+        <button class="btn" data-ficha="${p.i}">Ficha de la peli</button>
+        <button class="btn" data-mapa="${c.i}">En el mapa</button>
+      </div>
+    </div>`;
+    if (!dlg.open) dlg.showModal();
+  }
+
+  function descargarIcs(id) {
+    const s = SES[id]; const p = s.p;
+    const [y, m, d] = s.dia.iso.split('-');
+    const ini = new Date(+y, +m - 1, +d, 0, s.min);
+    const fin = new Date(ini.getTime() + ((p.duracion || 110) + 12) * 60000);
+    const f = (x) => `${x.getFullYear()}${pad(x.getMonth() + 1)}${pad(x.getDate())}T${pad(x.getHours())}${pad(x.getMinutes())}00`;
+    const t = (x) => String(x).replace(/[,;\\]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Sessio Continua//ES', 'BEGIN:VEVENT',
+      `UID:sc-${s.dia.iso}-${s.h.replace(':', '')}-${s.c.id}-${s.p.id}@sessio-continua`,
+      `DTSTAMP:${f(new Date())}`, `DTSTART:${f(ini)}`, `DTEND:${f(fin)}`,
+      `SUMMARY:${t(`${p.titulo} — ${s.c.corto}`)}`, `LOCATION:${t(`${s.c.nombre}, ${s.c.dir}`)}`,
+      `DESCRIPTION:${t(`${ver(s.v).l}. ${eur(s.pr.v)} (${s.pr.motivo}).${s.url ? ` Entradas: ${s.url}` : ''}`)}`,
+      'BEGIN:VALARM', 'TRIGGER:-PT45M', 'ACTION:DISPLAY', 'DESCRIPTION:Sales para el cine', 'END:VALARM',
+      'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    a.download = `${normal(p.titulo).replace(/ /g, '-')}-${s.dia.iso}.ics`;
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // ------------------------------------------------------------ ficha (diálogo)
+  function abrirFicha(pi) {
+    const p = PELIS[pi]; if (!p) return;
+    const dlg = $('#dlgFicha');
+    if ($('#dlgEntrada').open) $('#dlgEntrada').close();
+    const todas = SES.filter((s) => s.p === p && (S.zona === 'all' || s.c.zona === 'bcn') && !(S.ocultarPasadas && s.pasada)).sort(porHora);
+    const min = minimo(todas);
+    const porDia = [...agrupar(todas, (s) => s.dia).entries()];
+    const notas = [p.prensa ? `<div>Prensa<b>${num(p.prensa)}</b></div>` : '', p.publico ? `<div>Público<b>${num(p.publico)}</b></div>` : '',
+      `<div>Salas<b>${new Set(todas.map((s) => s.c)).size}</b></div>`, `<div>Desde<b>${eur(min)}</b></div>`].join('');
+    dlg.innerHTML = `<div class="ficha">
+      <button class="cerrar" data-cerrar aria-label="Cerrar">×</button>
+      <div class="ficha__cab">
+        ${poster(p)}
+        <div>
+          <span class="etq">${esc((p.generos || []).join(' · ') || 'Película')}</span>
+          <h2 id="fichaTit">${esc(p.titulo)}</h2>
+          ${p.original && normal(p.original) !== normal(p.titulo) ? `<p style="font-style:italic;margin-top:4px">${esc(p.original)}</p>` : ''}
+          <p class="peli__meta">${meta(p)}</p>
+          ${p.sinopsis ? `<p>${esc(p.sinopsis)}</p>` : ''}
+          ${(p.reparto || []).length ? `<p class="peli__meta">Con ${esc(p.reparto.join(', '))}</p>` : ''}
+          <div class="notas">${notas}</div>
+          ${p.ficha ? `<div class="enlaces" style="margin-top:12px"><a href="${esc(p.ficha)}" target="_blank" rel="noopener">Ficha completa y tráiler ↗</a></div>` : ''}
+        </div>
+      </div>
+      <div class="ficha__cuerpo">
+        ${porDia.length ? porDia.map(([d, l]) => `<h3 class="ficha__dia">${may(DS[d.dow])} ${d.num}${d.hoy ? '<small>HOY</small>' : ''}</h3>
+          <ul class="salas" style="margin-top:6px">${[...agrupar(l, (s) => s.c).entries()].map(([c, ls]) => `<li class="sala">
+            <div class="sala__nom">${esc(c.nombre)}<span class="sala__sub">${salaSub(c)}</span></div>
+            <div class="horas">${ls.map((s) => hora(s, s.pr.v === min && todas.length > 1, false)).join('')}</div></li>`).join('')}</ul>`).join('')
+          : '<p class="vacio" style="padding:20px 0">No quedan pases esta semana en la zona elegida.</p>'}
+      </div>
+    </div>`;
+    if (!dlg.open) dlg.showModal();
+    dlg.scrollTop = 0;
+  }
+
+  // ------------------------------------------------------------ eventos
+  let temporizador;
+  const q = $('#q');
+  function ponerBusqueda(v) {
+    S.q = v.trim(); S.tokens = normal(S.q).split(' ').filter(Boolean);
+    $('#campo').classList.toggle('lleno', !!S.q);
+    S.abiertas.clear(); S.limite = 120;
+    pintar();
+  }
+  q.addEventListener('input', () => { clearTimeout(temporizador); temporizador = setTimeout(() => ponerBusqueda(q.value), 140); });
+  $('#borrar').addEventListener('click', () => { q.value = ''; ponerBusqueda(''); q.focus(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && !document.querySelector('dialog[open]')) {
+      e.preventDefault(); q.focus(); q.select();
+    }
+    if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('tk')) abrirEntrada(+e.target.dataset.s);
+  });
+
+  $('#fPrecio').addEventListener('input', (e) => {
+    const v = +e.target.value;
+    S.precioMax = v >= PRECIO_TOPE ? null : v;
+    $('#fPrecioOut').textContent = S.precioMax == null ? 'Sin límite' : `${num(v)} €`;
+    clearTimeout(temporizador); temporizador = setTimeout(pintar, 90);
+  });
+  $('#fPasadas').addEventListener('change', (e) => { S.ocultarPasadas = e.target.checked; pintar(); });
+  $('#orden').addEventListener('change', (e) => { S.orden[S.vista] = e.target.value; S.limite = 120; pintar(); });
+
+  const sitio = $('#fCerca');
+  sitio.innerHTML += SITIOS.map(([n], i) => `<option value="${i}">${esc(n)}</option>`).join('');
+  sitio.addEventListener('change', () => {
+    if (sitio.value === '') { S.pos = null; S.posNombre = ''; CINES.forEach((c) => { c.km = null; }); pintar(); return; }
+    const [n, la, lo] = SITIOS[+sitio.value];
+    ponerPosicion(la, lo, n);
+  });
+  $('#fGeo').addEventListener('click', (e) => {
+    const b = e.currentTarget;
+    if (!navigator.geolocation) { b.textContent = 'Sin GPS en este navegador'; return; }
+    b.textContent = 'Buscándote…';
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { b.textContent = 'Usando tu ubicación'; sitio.value = ''; ponerPosicion(pos.coords.latitude, pos.coords.longitude, 'ti'); },
+      () => { b.textContent = 'No me deja: elige un sitio'; sitio.focus(); },
+      { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
+  });
+
+  $('#abrirFiltros').addEventListener('click', (e) => {
+    const f = $('#filtros'); const abierto = f.classList.toggle('abierto');
+    e.currentTarget.setAttribute('aria-expanded', abierto);
+  });
+
+  function limpiar() {
+    Object.assign(S, { franja: 'todo', precioMax: null, limite: 120 });
+    S.grupos.clear(); S.formatos.clear(); S.abiertas.clear();
+    q.value = ''; ponerBusqueda('');
+  }
+  $('#limpiar').addEventListener('click', limpiar);
+
+  $('#luces').addEventListener('click', () => {
+    const r = document.documentElement;
+    const oscuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    r.dataset.theme = oscuro ? 'light' : 'dark';
+    guardar('sc-tema', r.dataset.theme);
+    pintarLuces();
+  });
+  function pintarLuces() {
+    const r = document.documentElement;
+    const oscuro = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    $('#luces').textContent = oscuro ? 'Encender las luces' : 'Apagar las luces';
+  }
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-s],[data-ficha],[data-mas],[data-dia],[data-franja],[data-grupo],[data-formato],[data-zona],[data-vista],[data-sug],[data-cine],[data-ics],[data-cerrar],[data-mc],[data-mapa],[data-mvolver],[data-mctrl],[data-mbajar],#masTks,#vacioLimpiar,#verTarifas');
+    if (!t) {
+      if (e.target.tagName === 'DIALOG') e.target.close(); // clic en el fondo
+      return;
+    }
+    const d = t.dataset;
+    if (d.cerrar !== undefined) { t.closest('dialog').close(); return; }
+    if (d.ics) { descargarIcs(+d.ics); return; }
+    if (d.mctrl) { Mapa.control(d.mctrl); return; }
+    if (d.mc) { Mapa.seleccionar(+d.mc, { volar: !t.classList.contains('pin') }); return; }
+    if (d.mvolver !== undefined) { S.mapaSel = null; pintar(); return; }
+    if (d.mbajar !== undefined) { Mapa.panel().scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    if (d.mapa) {
+      const c = CINES[+d.mapa];
+      document.querySelectorAll('dialog[open]').forEach((x) => x.close());
+      if (c.zona === 'amb') S.zona = 'all';
+      S.vista = 'mapa'; S.mapaSel = c.i;
+      pintar();
+      Mapa.seleccionar(c.i, { volar: true });
+      $('.barra').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (d.s) { abrirEntrada(+d.s); return; }
+    if (d.ficha) { abrirFicha(+d.ficha); return; }
+    if (d.mas) { S.abiertas.has(d.mas) ? S.abiertas.delete(d.mas) : S.abiertas.add(d.mas); pintar(); return; }
+    if (d.dia) {
+      S.dia = +d.dia;
+      if (S.franja === 'ahora' && S.dia !== -1 && !DIAS[S.dia].hoy) S.franja = 'todo';
+      S.limite = 120; pintar(); return;
+    }
+    if (d.franja) { S.franja = S.franja === d.franja ? 'todo' : d.franja; if (S.franja === 'ahora' && hoyIdx >= 0) S.dia = hoyIdx; pintar(); return; }
+    if (d.grupo) { S.grupos.has(d.grupo) ? S.grupos.delete(d.grupo) : S.grupos.add(d.grupo); pintar(); return; }
+    if (d.formato) { S.formatos.has(d.formato) ? S.formatos.delete(d.formato) : S.formatos.add(d.formato); pintar(); return; }
+    if (d.zona) { S.zona = d.zona; guardar('sc-zona', S.zona); pintar(); return; }
+    if (d.vista) { S.vista = d.vista; S.limite = 120; pintar(); return; }
+    if (d.sug) { q.value = d.sug; ponerBusqueda(d.sug); return; }
+    if (d.cine) {
+      const c = CINES[+d.cine];
+      if (c.zona === 'amb') S.zona = 'all';
+      S.vista = 'cines'; q.value = c.nombre; ponerBusqueda(c.nombre);
+      $('.barra').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (t.id === 'masTks') { S.limite += 120; pintar(); return; }
+    if (t.id === 'vacioLimpiar') { limpiar(); return; }
+    if (t.id === 'verTarifas') { tarifasTodas = !tarifasTodas; pintarTarifas(); }
+  });
+
+  // pósters que no cargan -> cartel tipográfico
+  document.addEventListener('error', (e) => {
+    const img = e.target;
+    if (img.tagName !== 'IMG' || !img.dataset.p) return;
+    const p = PELIS[+img.dataset.p];
+    const span = img.parentElement;
+    span.classList.add('poster--letra');
+    span.setAttribute('style', `${span.getAttribute('style') || ''};${letraFondo(p)}`);
+    span.innerHTML = `<b>${esc(p.titulo)}</b><span>${p.anio || ''}</span>`;
+  }, true);
+
+  // ------------------------------------------------------------ arranque
+  $('#nCines').textContent = CINES.filter((c) => c.n).length;
+  $('#nPelis').textContent = PELIS.length;
+  const nHoy = hoyIdx >= 0 ? SES.filter((s) => s.dia.i === hoyIdx).length : SES.length;
+  $('#nHoy').textContent = nHoy.toLocaleString('es-ES');
+  if (hoyIdx < 0) $('#nHoyLbl').textContent = 'Pases';
+  $('#leyenda').innerHTML = Object.entries(VER).filter(([k]) => k !== 'VOC').map(([, v]) => `<dt>${v.t}</dt><dd>${esc(v.l)}</dd>`).join('')
+    + '<dt>aprox.</dt><dd>Precio sin confirmar por la sala</dd><dt style="background:var(--yellow);color:var(--on-yellow);padding:0 4px;align-self:start">00:00</dt><dd>El pase más barato de esa película</dd>';
+  $('#sinHorarios').innerHTML = (D.sin_horarios || []).map((n) => `<li><span>${esc(n)}</span></li>`).join('')
+    + CINES.filter((c) => !c.n).map((c) => `<li><span>${esc(c.nombre)}</span></li>`).join('');
+  $('#cerrados').innerHTML = (D.cerrados || []).map(([n, a]) => `<li><span>${esc(n)}</span><span class="mono">${a}</span></li>`).join('');
+  if (matchMedia('(max-width: 760px)').matches) q.placeholder = 'Película, sala o barrio…';
+  pintarCabecera();
+  pintarLuces();
+  pintar();
+})();
+</script>
+</body>
+</html>
