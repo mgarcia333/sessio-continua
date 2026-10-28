@@ -2,6 +2,8 @@
 
 # Sessió Contínua
 
+https://sessio-continua.mgarciap.workers.dev/
+
 **La cartelera de todos los cines de Barcelona en una sola página:**
 qué echan, a qué hora, en qué versión y cuánto cuesta cada sesión.
 
