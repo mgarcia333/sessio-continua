@@ -627,10 +627,33 @@ def fusionar_titulos(fichas, sesiones):
         fichas.pop(viejo, None)
 
 
+def validar(datos):
+    """Devuelve un texto con el problema si la cartelera nueva parece incompleta
+    (p. ej. Sensacine ha cambiado su HTML o nos ha bloqueado); None si está bien."""
+    n_ses, n_pel = len(datos["sesiones"]), len(datos["peliculas"])
+    if n_ses < 100 or n_pel < 10:
+        return f"solo {n_ses} sesiones y {n_pel} películas"
+    try:
+        with open(SALIDA, encoding="utf-8") as fh:
+            txt = fh.read()
+        ant = json.loads(txt[txt.index("{"):txt.rindex("}") + 1])
+    except (OSError, ValueError):
+        return None  # no hay cartelera previa con la que comparar
+    if len(ant["fechas"]) == len(datos["fechas"]) and n_ses < 0.6 * len(ant["sesiones"]):
+        return f"{n_ses} sesiones frente a {len(ant['sesiones'])} de la cartelera anterior"
+    cines_ant = {f[0] for f in ant["sesiones"]}
+    cines_nue = {f[0] for f in datos["sesiones"]}
+    if len(cines_nue) < 0.7 * len(cines_ant):
+        return f"hay sesiones de {len(cines_nue)} cines frente a {len(cines_ant)} antes"
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dias", type=int, default=7)
     ap.add_argument("--desde", help="YYYY-MM-DD (por defecto, hoy)")
+    ap.add_argument("--forzar", action="store_true",
+                    help="escribir aunque el resultado parezca incompleto")
     a = ap.parse_args()
     inicio = dt.date.fromisoformat(a.desde) if a.desde else dt.date.today()
     fechas = [(inicio + dt.timedelta(days=i)).isoformat() for i in range(a.dias)]
@@ -726,12 +749,19 @@ def main():
         sin_horarios=SIN_HORARIOS, cerrados=CERRADOS,
         poster_base="https://es.web.img3.acsta.net/c_310_420",
     )
+    if not a.forzar:
+        problema = validar(datos)
+        if problema:
+            log(f"\nERROR: {problema}. No se sobrescribe {SALIDA} (usa --forzar para ignorarlo).")
+            sys.exit(1)
     os.makedirs(os.path.dirname(SALIDA), exist_ok=True)
-    with open(SALIDA, "w", encoding="utf-8") as fh:
+    tmp = SALIDA + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
         fh.write("/* Generado por actualizar_cartelera.py — no editar a mano */\n")
         fh.write("window.CARTELERA = ")
         json.dump(datos, fh, ensure_ascii=False, separators=(",", ":"))
         fh.write(";\n")
+    os.replace(tmp, SALIDA)  # escritura atómica: nunca queda un fichero a medias
     por_cine = {}
     for f in sesiones:
         por_cine[CINES[f[0]]["corto"]] = por_cine.get(CINES[f[0]]["corto"], 0) + 1

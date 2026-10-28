@@ -1212,9 +1212,9 @@ svg[data-z="3"] .m-rot-dist { fill-opacity: .16; }
     $('#colofonFecha').textContent = `Datos recogidos el ${g.getDate()} de ${MS[g.getMonth()]} de ${g.getFullYear()}, ${pad(g.getHours())}:${pad(g.getMinutes())}`;
     const avisos = [];
     if (caducada) {
-      avisos.push(`<p class="aviso"><b>Esta cartelera ha caducado.</b> Es del ${g.getDate()} de ${MS[g.getMonth()]} y ya no sirve para hoy. Ejecuta <code>python actualizar_cartelera.py</code> en la carpeta de la web y recarga.</p>`);
+      avisos.push(`<p class="aviso"><b>Esta cartelera ha caducado.</b> Es del ${g.getDate()} de ${MS[g.getMonth()]} y ya no sirve para hoy. La actualización diaria no se ha completado; volverá a intentarse automáticamente.</p>`);
     } else if ((ahora - g) / 864e5 > 1.5) {
-      avisos.push(`<p class="aviso"><b>Ojo:</b> los horarios son del ${g.getDate()} de ${MS[g.getMonth()]}. Para tenerlos frescos, ejecuta <code>python actualizar_cartelera.py</code>.</p>`);
+      avisos.push(`<p class="aviso"><b>Ojo:</b> los horarios son del ${g.getDate()} de ${MS[g.getMonth()]} y la actualización de hoy aún no ha llegado. Comprueba los horarios en la web de cada cine.</p>`);
     }
     $('#avisos').innerHTML = avisos.join('');
   }

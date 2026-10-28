@@ -1,0 +1,48 @@
+name: Actualizar cartelera
+
+on:
+  schedule:
+    # 04:00 UTC = 05:00/06:00 en Barcelona (invierno/verano)
+    - cron: "0 4 * * *"
+  workflow_dispatch: # botón "Run workflow" en la pestaña Actions
+
+# Solo una ejecución a la vez; si se solapan, se espera.
+concurrency:
+  group: actualizar-cartelera
+  cancel-in-progress: false
+
+permissions:
+  contents: write # para hacer commit de data/cartelera.js
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TZ: Europe/Madrid # "hoy" según la hora de Barcelona, no la de UTC
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar pdftotext (programa de la Filmoteca)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+      # Si el script detecta una cartelera incompleta sale con error y NO se
+      # sobrescribe nada: la web sigue con los datos del día anterior.
+      - name: Generar cartelera
+        run: python actualizar_cartelera.py
+
+      - name: Commit y push si hay cambios
+        run: |
+          if git diff --quiet -- data/cartelera.js; then
+            echo "Sin cambios."
+            exit 0
+          fi
+          git config user.name "sessio-continua-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cartelera.js
+          git commit -m "chore: actualizar cartelera $(date +%F)"
+          git push

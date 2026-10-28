@@ -100,8 +100,16 @@ npx wrangler deploy
 ```
 
 `wrangler.jsonc` sirve la raíz del repo y `.assetsignore` deja fuera scripts, documentación y metadatos.
-Para mantener la cartelera al día, ejecuta `actualizar_cartelera.py` y haz commit de `data/cartelera.js`
-(se puede automatizar con una tarea programada o GitHub Actions).
+### Actualización automática
+
+El workflow [`.github/workflows/actualizar-cartelera.yml`](.github/workflows/actualizar-cartelera.yml)
+ejecuta `actualizar_cartelera.py` cada día a las ~05:00 (Barcelona) en GitHub Actions y hace commit de
+`data/cartelera.js`; Cloudflare redespliega solo con cada push. También se puede lanzar a mano desde
+la pestaña **Actions → Actualizar cartelera → Run workflow**.
+
+Si el resultado parece incompleto (muy pocas sesiones, o muchas menos que la cartelera anterior) el script
+sale con error y **no sobrescribe nada**: la web sigue con los datos del día anterior y GitHub avisa por email.
+Se puede saltar la comprobación con `--forzar`.
 
 ## Créditos y datos
 
